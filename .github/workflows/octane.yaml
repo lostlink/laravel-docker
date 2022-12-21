@@ -6,15 +6,17 @@ on:
       - 'main'
 
 jobs:
-  strategy:
-    fail-fast: false
-    matrix:
-      tag:
-        - "8.1-cli-buster"
-        - "8.2-cli-buster,latest"
-
   docker:
     runs-on: ubuntu-latest
+    concurrency: 'octane'
+
+    strategy:
+      fail-fast: false
+      matrix:
+        tag:
+          - "8.1-cli-buster"
+          - "8.2-cli-buster,latest"
+
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2

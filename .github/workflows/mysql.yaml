@@ -8,6 +8,8 @@ on:
 jobs:
   docker:
     runs-on: ubuntu-latest
+    concurrency: 'mysql'
+
     steps:
       -
         name: Set up QEMU
