@@ -1,4 +1,4 @@
-name: ci
+name: Build & Push Mysql
 
 on:
   push:
@@ -25,7 +25,7 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v3
         with:
-          context: "{{defaultContext}}:redis"
+          context: "{{defaultContext}}:mysql"
           platforms: linux/arm64
           push: true
-          tags: lostlink/redis:latest
+          tags: lostlink/mysql:latest

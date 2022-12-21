@@ -1,4 +1,4 @@
-name: ci
+name: Build & Push Meilisearch
 
 on:
   push:
@@ -25,7 +25,7 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v3
         with:
-          context: "{{defaultContext}}:mysql"
+          context: "{{defaultContext}}:meilisearch"
           platforms: linux/arm64
           push: true
-          tags: lostlink/mysql:latest
+          tags: lostlink/meilisearch:latest
