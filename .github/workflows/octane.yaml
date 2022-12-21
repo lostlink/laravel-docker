@@ -8,7 +8,6 @@ on:
 jobs:
   docker:
     runs-on: ubuntu-latest
-    concurrency: 'octane'
 
     strategy:
       fail-fast: false
@@ -41,4 +40,4 @@ jobs:
           push: true
           tags: lostlink/octane:${{ matrix.tag }}
           build-args: |
-            "PHP_TAG=$PHP_TAG"
+            "PHP_TAG=${{ PHP_TAG }}"
