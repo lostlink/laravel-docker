@@ -40,4 +40,4 @@ jobs:
           push: true
           tags: lostlink/octane:${{ matrix.tag }}
           build-args: |
-            "PHP_TAG=${{ PHP_TAG }}"
+            "PHP_TAG=${{ env.PHP_TAG }}"
