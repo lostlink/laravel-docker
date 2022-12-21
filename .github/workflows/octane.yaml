@@ -28,7 +28,7 @@ jobs:
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Extract latest from Tag Matrix
         run: echo "PHP_TAG=`echo '${{ matrix.tag }}' | cut -d',' -f 1`" >> $GITHUB_ENV
