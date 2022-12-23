@@ -18,6 +18,5 @@ if [ "$1" != "" ]; then
 else
     initialStuff
     exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.web.conf
-    exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.horizon.conf
     exec supercronic /etc/supercronic/laravel
 fi

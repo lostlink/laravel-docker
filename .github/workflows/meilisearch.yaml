@@ -6,27 +6,46 @@ on:
       - 'main'
 
 jobs:
-  docker:
+  meilisearch:
     runs-on: ubuntu-latest
 
+    strategy:
+      fail-fast: false
+      matrix:
+        tag:
+          - "v0.30"
+          - "latest"
+
     steps:
-      -
-        name: Set up QEMU
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+
+      - name: Import environment variables from a file
+        uses: cardinalby/export-env-action@v2
+        with:
+          envFile: '.env'
+          expand: 'true'
+
+      - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
-      -
-        name: Set up Docker Buildx
+
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
-      -
-        name: Login to Docker Hub
+
+      - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
-      -
-        name: Build and push
+
+      - name: Build and push
         uses: docker/build-push-action@v3
         with:
           context: "{{defaultContext}}:meilisearch"
           platforms: linux/arm64
           push: true
-          tags: lostlink/meilisearch:latest
+          tags: lostlink/meilisearch:${{ matrix.tag }}
+          build-args: |
+            "MEILISEARCH_TAG=${{ matrix.tag }}"

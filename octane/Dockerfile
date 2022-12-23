@@ -7,9 +7,13 @@ LABEL maintainer="Nuno Souto <nsouto@lostlink.net>"
 ARG WWWUSER=1000
 ARG WWWGROUP=1000
 ARG TIMEZONE=UTC
+ARG ENABLE_HORIZON=true
+ARG ENABLE_SCHEDULER=true
 
 ENV DEBIAN_FRONTEND=noninteractive \
-    TERM=xterm-color
+    TERM=xterm-color \
+    ENABLE_HORIZON=${ENABLE_HORIZON} \
+    ENABLE_SCHEDULER=${ENABLE_SCHEDULER}
 
 ENV ROOT=/var/www/html
 WORKDIR $ROOT
@@ -127,7 +131,7 @@ RUN if [ ${INSTALL_BCMATH} = true ]; then \
 # RDKAFKA
 ###########################################
 
-ARG INSTALL_RDKAFKA=true
+ARG INSTALL_RDKAFKA=false
 
 RUN if [ ${INSTALL_RDKAFKA} = true ]; then \
       apt-get install -yqq --no-install-recommends --show-progress librdkafka-dev \

@@ -6,7 +6,7 @@ on:
       - 'main'
 
 jobs:
-  docker:
+  octane:
     runs-on: ubuntu-latest
 
     strategy:
@@ -14,9 +14,21 @@ jobs:
       matrix:
         tag:
           - "8.1-cli-buster"
-          - "8.2-cli-buster,latest"
+          - "8.2-cli-buster"
+          - "latest"
 
     steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+        with:
+          lfs: true
+
+      - name: Import environment variables from a file
+        uses: cardinalby/export-env-action@v2
+        with:
+          envFile: ".env"
+          expand: "true"
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
 
@@ -29,9 +41,6 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      - name: Extract latest from Tag Matrix
-        run: echo "PHP_TAG=`echo '${{ matrix.tag }}' | cut -d',' -f 1`" >> $GITHUB_ENV
-
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
@@ -40,4 +49,22 @@ jobs:
           push: true
           tags: lostlink/octane:${{ matrix.tag }}
           build-args: |
-            "PHP_TAG=${{ env.PHP_TAG }}"
+            "PHP_TAG=${{ matrix.tag }}"
+            "TIMEZONE=${{ env.TIMEZONE }}"
+            "WWWUSER=${{ env.WWWUSER }}"
+            "WWWGROUP=${{ env.WWWGROUP }}"
+            "ENABLE_HORIZON=${{ env.ENABLE_HORIZON }}"
+            "ENABLE_SCHEDULER=${{ env.ENABLE_SCHEDULER }}"
+            "INSTALL_OPCACHE=${{ env.INSTALL_OPCACHE }}"
+            "INSTALL_PHPREDIS=${{ env.INSTALL_PHPREDIS }}"
+            "INSTALL_PCNTL=${{ env.INSTALL_PCNTL }}"
+            "INSTALL_BCMATH=${{ env.INSTALL_BCMATH }}"
+            "INSTALL_RDKAFKA=${{ env.INSTALL_RDKAFKA }}"
+            "INSTALL_SWOOLE=${{ env.INSTALL_SWOOLE }}"
+            "INSTALL_INTL=${{ env.INSTALL_INTL }}"
+            "INSTALL_MEMCACHED=${{ env.INSTALL_MEMCACHED }}"
+            "INSTALL_MYSQL_CLIENT=${{ env.INSTALL_MYSQL_CLIENT }}"
+            "INSTALL_PDO_PGSQL=${{ env.INSTALL_PDO_PGSQL }}"
+            "INSTALL_PGSQL=${{ env.INSTALL_PGSQL }}"
+            "INSTALL_PG_CLIENT=${{ env.INSTALL_PG_CLIENT }}"
+            "INSTALL_POSTGIS=${{ env.INSTALL_POSTGIS }}"
