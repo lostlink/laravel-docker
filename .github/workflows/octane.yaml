@@ -61,6 +61,7 @@ jobs:
             "INSTALL_BCMATH=${{ env.INSTALL_BCMATH }}"
             "INSTALL_RDKAFKA=${{ env.INSTALL_RDKAFKA }}"
             "INSTALL_SWOOLE=${{ env.INSTALL_SWOOLE }}"
+            "SWOOLE_SERVER=${{ env.SWOOLE_SERVER }}"
             "INSTALL_INTL=${{ env.INSTALL_INTL }}"
             "INSTALL_MEMCACHED=${{ env.INSTALL_MEMCACHED }}"
             "INSTALL_MYSQL_CLIENT=${{ env.INSTALL_MYSQL_CLIENT }}"
