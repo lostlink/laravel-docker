@@ -12,10 +12,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        tag:
-          - "6.0"
-          - "7.0"
-          - "latest"
+        build:
+          - {tag: "6.0", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
+          - {tag: "7.0", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
+          - {tag: "latest", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
 
     steps:
       - name: Check out code
@@ -26,7 +26,7 @@ jobs:
       - name: Import environment variables from a file
         uses: cardinalby/export-env-action@v2
         with:
-          envFile: '.env'
+          envFile: 'docker.env'
           expand: 'true'
 
       - name: Set up QEMU
@@ -45,8 +45,8 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: "{{defaultContext}}:redis"
-          platforms: "linux/arm64,linux/amd64"
+          platforms: ${{ matrix.build.platforms }}
           push: true
-          tags: lostlink/redis:${{ matrix.tag }}
+          tags: lostlink/redis:${{ matrix.build.tag }}
           build-args: |
-            "REDIS_TAG=${{ matrix.tag }}"
+            "REDIS_TAG=${{ matrix.build.tag }}"

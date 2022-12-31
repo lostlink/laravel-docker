@@ -12,10 +12,13 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        tag:
-          - "8.1-cli-buster"
-          - "8.2-cli-buster"
-          - "latest"
+        build:
+          - {tag: "8.0-cli-buster", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
+          - {tag: "8.0.26-cli-buster", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
+          - {tag: "8.1-cli-buster", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
+          - {tag: "8.1.13-cli-buster", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
+          - {tag: "8.2-cli-buster", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
+          - {tag: "latest", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
 
     steps:
       - name: Check out code
@@ -26,7 +29,7 @@ jobs:
       - name: Import environment variables from a file
         uses: cardinalby/export-env-action@v2
         with:
-          envFile: ".env"
+          envFile: "docker.env"
           expand: "true"
 
       - name: Set up QEMU
@@ -45,11 +48,11 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: "{{defaultContext}}:octane"
-          platforms: "linux/arm64,linux/amd64"
+          platforms: ${{ matrix.build.platforms }}
           push: true
-          tags: lostlink/octane:${{ matrix.tag }}
+          tags: lostlink/octane:${{ matrix.build.tag }}
           build-args: |
-            "PHP_TAG=${{ matrix.tag }}"
+            "PHP_TAG=${{ matrix.build.tag }}"
             "TIMEZONE=${{ env.TIMEZONE }}"
             "WWWUSER=${{ env.WWWUSER }}"
             "WWWGROUP=${{ env.WWWGROUP }}"

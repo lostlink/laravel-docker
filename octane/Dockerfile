@@ -9,6 +9,7 @@ ARG WWWGROUP=1000
 ARG TIMEZONE=UTC
 ARG ENABLE_HORIZON=true
 ARG ENABLE_SCHEDULER=true
+ARG TARGETARCH
 
 ENV DEBIAN_FRONTEND=noninteractive \
     TERM=xterm-color \
@@ -227,10 +228,8 @@ RUN if [ ${INSTALL_PG_CLIENT} = true ]; then \
 ###########################################
 # Laravel scheduler
 ###########################################
-
-# TODO: Detect Architecture for proper SuperCronic Binary download
 RUN \
-    wget -q "https://github.com/aptible/supercronic/releases/download/v0.2.1/supercronic-linux-arm64" -O /usr/bin/supercronic \
+    wget -q "https://github.com/aptible/supercronic/releases/download/v0.2.1/supercronic-linux-${TARGETARCH}" -O /usr/bin/supercronic \
     && chmod +x /usr/bin/supercronic \
     && mkdir -p /etc/supercronic \
     && echo "*/1 * * * * php ${ROOT}/artisan schedule:run --verbose --no-interaction" > /etc/supercronic/laravel;

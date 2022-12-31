@@ -12,9 +12,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        tag:
-          - "v0.30"
-          - "latest"
+        build:
+          - {tag: "v0.30", platforms: "linux/arm64,linux/amd64"}
+          - {tag: "v0.30.5", platforms: "linux/arm64,linux/amd64"}
+          - {tag: "latest", platforms: "linux/arm64,linux/amd64"}
 
     steps:
       - name: Check out code
@@ -25,7 +26,7 @@ jobs:
       - name: Import environment variables from a file
         uses: cardinalby/export-env-action@v2
         with:
-          envFile: '.env'
+          envFile: 'docker.env'
           expand: 'true'
 
       - name: Set up QEMU
@@ -44,8 +45,8 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: "{{defaultContext}}:meilisearch"
-          platforms: "linux/arm64,linux/amd64"
+          platforms: ${{ matrix.build.platforms }}
           push: true
-          tags: lostlink/meilisearch:${{ matrix.tag }}
+          tags: lostlink/meilisearch:${{ matrix.build.tag }}
           build-args: |
-            "MEILISEARCH_TAG=${{ matrix.tag }}"
+            "MEILISEARCH_TAG=${{ matrix.build.tag }}"
