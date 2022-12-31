@@ -12,9 +12,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform:
-          - "linux/arm64"
-          - "linux/amd64"
         tag:
           - "v0.30"
           - "latest"
@@ -47,7 +44,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: "{{defaultContext}}:meilisearch"
-          platforms: ${{ matrix.platform }}
+          platforms: "linux/arm64,linux/amd64"
           push: true
           tags: lostlink/meilisearch:${{ matrix.tag }}
           build-args: |

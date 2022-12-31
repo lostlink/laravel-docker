@@ -12,9 +12,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform:
-          - "linux/arm64"
-          - "linux/amd64"
         tag:
           - "8.1-cli-buster"
           - "8.2-cli-buster"
@@ -48,7 +45,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: "{{defaultContext}}:octane"
-          platforms: ${{ matrix.platform }}
+          platforms: "linux/arm64,linux/amd64"
           push: true
           tags: lostlink/octane:${{ matrix.tag }}
           build-args: |
