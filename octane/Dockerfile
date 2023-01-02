@@ -253,6 +253,6 @@ COPY ./usr/local/etc/php/conf.d/opcache.ini /usr/local/etc/php/conf.d/opcache.in
 RUN chmod +x /usr/local/bin/entrypoint.sh
 RUN cat /root/.docker/utilities.sh >> ~/.bashrc
 
-EXPOSE 9000
+EXPOSE 80
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
