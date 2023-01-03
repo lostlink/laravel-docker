@@ -16,7 +16,7 @@ RUN composer create-project \
     --no-dev \
     laravel/laravel .
 
-RUN sed -i 's/LOG_CHANNEL=stack/LOG_CHANNEL=stdout/g' .env
+RUN sed -i 's/LOG_CHANNEL=stack/LOG_CHANNEL=stderr/g' .env
 
 ###########################################
 # Octane
