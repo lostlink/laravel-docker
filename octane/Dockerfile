@@ -16,6 +16,9 @@ RUN composer create-project \
     --no-dev \
     laravel/laravel .
 
+RUN composer require laravel/octane \
+    && php artisan octane:install --server=swoole
+
 RUN sed -i 's/LOG_CHANNEL=stack/LOG_CHANNEL=stderr/g' .env
 
 ###########################################
