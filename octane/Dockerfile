@@ -1,5 +1,22 @@
-ARG PHP_TAG
+ARG PHP_TAG=latest
+ARG COMPOSER_VERSION=latest
 
+###########################################
+# PHP dependencies
+###########################################
+FROM composer:${COMPOSER_VERSION} AS composer
+WORKDIR /var/www/html
+RUN composer create-project \
+    --no-interaction \
+    --prefer-dist \
+    --ignore-platform-reqs \
+    --ansi \
+    --no-dev \
+    laravel/laravel .
+
+###########################################
+# Octane
+###########################################
 FROM php:${PHP_TAG}
 
 LABEL maintainer="Nuno Souto <nsouto@lostlink.net>"
@@ -249,6 +266,8 @@ COPY ./utilities.sh /root/.docker/utilities.sh
 COPY ./etc/supervisor/conf.d/supervisord* /etc/supervisor/conf.d/
 COPY ./usr/local/etc/php/conf.d/php.ini /usr/local/etc/php/conf.d/octane.ini
 COPY ./usr/local/etc/php/conf.d/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
+
+COPY --from=composer ${ROOT} ${ROOT}
 
 RUN chmod +x /usr/local/bin/entrypoint.sh
 RUN cat /root/.docker/utilities.sh >> ~/.bashrc
