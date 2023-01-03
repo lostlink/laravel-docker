@@ -2,10 +2,12 @@ ARG PHP_TAG=latest
 ARG COMPOSER_TAG=latest
 
 ###########################################
-# PHP dependencies
+# Default Laravel Install
 ###########################################
 FROM composer:${COMPOSER_TAG} AS composer
+
 WORKDIR /var/www/html
+
 RUN composer create-project \
     --no-interaction \
     --prefer-dist \
@@ -13,6 +15,8 @@ RUN composer create-project \
     --ansi \
     --no-dev \
     laravel/laravel .
+
+RUN sed -i 's/LOG_CHANNEL=stack/LOG_CHANNEL=stdout/g' .env
 
 ###########################################
 # Octane
@@ -250,7 +254,6 @@ RUN \
     && chmod +x /usr/bin/supercronic \
     && mkdir -p /etc/supercronic \
     && echo "*/1 * * * * php ${ROOT}/artisan schedule:run --verbose --no-interaction" > /etc/supercronic/laravel;
-
 ###########################################
 
 RUN groupadd --force -g $WWWGROUP octane \
@@ -268,6 +271,14 @@ COPY ./usr/local/etc/php/conf.d/php.ini /usr/local/etc/php/conf.d/octane.ini
 COPY ./usr/local/etc/php/conf.d/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
 COPY --from=composer ${ROOT} ${ROOT}
+RUN mkdir -p \
+  storage/framework/{sessions,views,cache} \
+  storage/logs \
+  bootstrap/cache \
+  && chown -R octane:octane \
+  storage \
+  bootstrap/cache \
+  && chmod -R ug+rwx storage bootstrap/cache
 
 RUN chmod +x /usr/local/bin/entrypoint.sh
 RUN cat /root/.docker/utilities.sh >> ~/.bashrc
