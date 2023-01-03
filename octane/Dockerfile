@@ -1,10 +1,10 @@
 ARG PHP_TAG=latest
-ARG COMPOSER_VERSION=latest
+ARG COMPOSER_TAG=latest
 
 ###########################################
 # PHP dependencies
 ###########################################
-FROM composer:${COMPOSER_VERSION} AS composer
+FROM composer:${COMPOSER_TAG} AS composer
 WORKDIR /var/www/html
 RUN composer create-project \
     --no-interaction \
