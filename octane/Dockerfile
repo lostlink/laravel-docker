@@ -286,6 +286,6 @@ RUN mkdir -p \
 RUN chmod +x /usr/local/bin/entrypoint.sh
 RUN cat /root/.docker/utilities.sh >> ~/.bashrc
 
-EXPOSE 80
+EXPOSE 9000
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
