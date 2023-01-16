@@ -6,7 +6,7 @@
 
 DOCKER_ORGANIZATION ?= lostlink
 DOCKER_TAG ?= dev
-ENVIRONMENT = .env
+ENVIRONMENT = docker.env
 
 .EXPORT_ALL_VARIABLES:
 sinclude $(ENVIRONMENT)
@@ -15,9 +15,11 @@ DOCKERFILES = $(shell find * -type f -name Dockerfile)
 NAMES=$(subst /,\:,$(subst /Dockerfile,,$(subst docker/,,$(DOCKERFILES))))
 EXISTING_IMAGES=$(shell docker images -a | grep $(DOCKER_ORGANIZATION) | awk '{print $$3}')
 
+PLATFORMS ?= linux/arm/v7,linux/arm64,linux/amd64
+
 BUILD_ARGS = $(shell cat $(ENVIRONMENT) | grep -v "\#\#" | grep "\S" | awk -F "=" '{ print "--build-arg " $$1"="$$2;}' | xargs)
 
-.PHONY: all clean push pull run exec check checkrebuild pull-base ci $(NAMES) $(DOCKERFILES)
+.PHONY: all clean push pull run exec check checkrebuild pull-base ci dev $(NAMES) $(DOCKERFILES)
 
 help:
 	@echo "A WIP smart Makefile for your dockerfiles"
@@ -68,12 +70,17 @@ $(NAMES): %: %/Dockerfile
 #	duuh $<
 #endif
 
+
+## TODO: Read GithubActions when building locally
 $(DOCKERFILES): %:
 ifeq (pull,$(filter pull,$(MAKECMDGOALS)))
 	docker pull $(addprefix $(subst :,\:,$(DOCKER_ORGANIZATION)/),$(subst /,\:,$(subst /Dockerfile,,$(subst docker/,,$@))))
 endif
 ifeq (push,$(filter push,$(MAKECMDGOALS)))
 	act -j $(subst /Dockerfile,,$@)
+endif
+ifeq (dev,$(filter dev,$(MAKECMDGOALS)))
+	docker buildx build --load --platform linux/arm64 --tag $(addprefix $(subst :,\:,$(DOCKER_ORGANIZATION)/),$(subst /,\:,$(subst /Dockerfile,,$@))):$(DOCKER_TAG) $(BUILD_ARGS) -f $@ ./$(subst /Dockerfile,,$@)/.
 else
-	docker build --tag $(addprefix $(subst :,\:,$(DOCKER_ORGANIZATION)/),$(subst /,\:,$(subst /Dockerfile,,$@))):$(DOCKER_TAG) $(BUILD_ARGS) -f $@ ./$(subst /Dockerfile,,$@)/.
+	docker buildx build --platform $(PLATFORMS) --tag $(addprefix $(subst :,\:,$(DOCKER_ORGANIZATION)/),$(subst /,\:,$(subst /Dockerfile,,$@))):$(DOCKER_TAG) $(BUILD_ARGS) -f $@ ./$(subst /Dockerfile,,$@)/.
 endif

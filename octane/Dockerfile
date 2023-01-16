@@ -153,6 +153,16 @@ RUN if [ ${INSTALL_BCMATH} = true ]; then \
   fi
 
 ###########################################
+# Exif
+###########################################
+
+ARG INSTALL_EXIF=true
+
+RUN if [ ${INSTALL_EXIF} = true ]; then \
+      docker-php-ext-install exif; \
+  fi
+
+###########################################
 # RDKAFKA
 ###########################################
 
