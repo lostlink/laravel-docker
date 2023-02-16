@@ -17,6 +17,8 @@ if [ "$1" != "" ]; then
     exec "$@"
 else
     initialStuff
-    exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.web.conf
-    exec supercronic /etc/supercronic/laravel
+    /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
+    supercronic /etc/supercronic/laravel
+    if [ "$ENV_ENABLE_HORIZON" = "true" ]; then supervisorctl start horizon; fi
+    if [ "$ENV_ENABLE_SCHEDULER" = "true" ]; then supervisorctl start scheduler; fi
 fi

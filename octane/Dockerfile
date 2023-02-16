@@ -31,8 +31,8 @@ LABEL maintainer="Nuno Souto <nsouto@lostlink.net>"
 ARG WWWUSER=1000
 ARG WWWGROUP=1000
 ARG TIMEZONE=UTC
-ARG ENABLE_HORIZON=true
-ARG ENABLE_SCHEDULER=true
+ARG ENABLE_HORIZON=false
+ARG ENABLE_SCHEDULER=false
 ARG TARGETARCH
 
 ENV DEBIAN_FRONTEND=noninteractive \
@@ -280,6 +280,7 @@ RUN apt-get clean \
 COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY ./utilities.sh /root/.docker/utilities.sh
 COPY ./etc/supervisor/conf.d/supervisord* /etc/supervisor/conf.d/
+COPY ./etc/supervisor/supervisor.conf /etc/supervisor/supervisor.conf
 COPY ./usr/local/etc/php/conf.d/php.ini /usr/local/etc/php/conf.d/octane.ini
 COPY ./usr/local/etc/php/conf.d/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
@@ -293,8 +294,9 @@ RUN mkdir -p \
   bootstrap/cache \
   && chmod -R ug+rwx storage bootstrap/cache
 
-RUN chmod +x /usr/local/bin/entrypoint.sh
-RUN cat /root/.docker/utilities.sh >> ~/.bashrc
+RUN chmod +x /usr/local/bin/entrypoint.sh; \
+    chmod 777 /var/run; \
+    cat /root/.docker/utilities.sh >> ~/.bashrc
 
 EXPOSE 9000
 
