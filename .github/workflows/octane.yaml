@@ -19,7 +19,6 @@ jobs:
           - {tag: "8.1.13-cli-buster", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
           - {tag: "8.2-cli-buster", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
           - {tag: "latest", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
-
     steps:
       - name: Check out code
         uses: actions/checkout@v2
@@ -58,6 +57,7 @@ jobs:
             "WWWGROUP=${{ env.WWWGROUP }}"
             "ENABLE_HORIZON=${{ env.ENABLE_HORIZON }}"
             "ENABLE_SCHEDULER=${{ env.ENABLE_SCHEDULER }}"
+            "INCLUDE_NPM=${{ env.INCLUDE_NPM }}"
             "INSTALL_OPCACHE=${{ env.INSTALL_OPCACHE }}"
             "INSTALL_PHPREDIS=${{ env.INSTALL_PHPREDIS }}"
             "INSTALL_PCNTL=${{ env.INSTALL_PCNTL }}"

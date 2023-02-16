@@ -1,5 +1,6 @@
 ARG PHP_TAG=latest
 ARG COMPOSER_TAG=latest
+ARG NODE_VERSION=18.x
 
 ###########################################
 # Default Laravel Install
@@ -34,6 +35,7 @@ ARG TIMEZONE=UTC
 ARG ENABLE_HORIZON=false
 ARG ENABLE_SCHEDULER=false
 ARG TARGETARCH
+ARG NODE_VERSION
 
 ENV DEBIAN_FRONTEND=noninteractive \
     TERM=xterm-color \
@@ -52,34 +54,34 @@ RUN apt-get update; \
     apt-get upgrade -yqq; \
     pecl -q channel-update pecl.php.net; \
     apt-get install -yqq --no-install-recommends --show-progress \
-          apt-utils \
-          gnupg \
-          gosu \
-          git \
-          curl \
-          wget \
-          libcurl4-openssl-dev \
-          ca-certificates \
-          supervisor \
-          libmemcached-dev \
-          libz-dev \
-          libbrotli-dev \
-          libpq-dev \
-          libjpeg-dev \
-          libpng-dev \
-          libfreetype6-dev \
-          libssl-dev \
-          libwebp-dev \
-          libmcrypt-dev \
-          libonig-dev \
-          libzip-dev zip unzip \
-          libargon2-1 \
-          libidn2-0 \
-          libpcre2-8-0 \
-          libpcre3 \
-          libxml2 \
-          libzstd1 \
-          procps
+            apt-utils \
+            gnupg \
+            gosu \
+            git \
+            curl \
+            wget \
+            libcurl4-openssl-dev \
+            ca-certificates \
+            supervisor \
+            libmemcached-dev \
+            libz-dev \
+            libbrotli-dev \
+            libpq-dev \
+            libjpeg-dev \
+            libpng-dev \
+            libfreetype6-dev \
+            libssl-dev \
+            libwebp-dev \
+            libmcrypt-dev \
+            libonig-dev \
+            libzip-dev zip unzip \
+            libargon2-1 \
+            libidn2-0 \
+            libpcre2-8-0 \
+            libpcre3 \
+            libxml2 \
+            libzstd1 \
+            procps
 
 ###########################################
 # pdo_mysql
@@ -260,6 +262,21 @@ RUN if [ ${INSTALL_PG_CLIENT} = true ]; then \
   fi
 
 ###########################################
+# Include composer
+###########################################
+COPY --from=composer /usr/bin/composer /usr/local/bin/composer
+###########################################
+
+###########################################
+# Include NPM
+###########################################
+RUN if [ ${INCLUDE_NPM} = true ]; then \
+        curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION} | bash - && \
+        apt-get install -y nodejs \
+    fi
+###########################################
+
+###########################################
 # Laravel scheduler
 ###########################################
 RUN \
@@ -271,11 +288,6 @@ RUN \
 
 RUN groupadd --force -g $WWWGROUP octane \
     && useradd -ms /bin/bash --no-log-init --no-user-group -g $WWWGROUP -u $WWWUSER octane
-
-RUN apt-get clean \
-    && docker-php-source delete \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-    && rm /var/log/lastlog /var/log/faillog
 
 COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY ./utilities.sh /root/.docker/utilities.sh
@@ -297,6 +309,11 @@ RUN mkdir -p \
 RUN chmod +x /usr/local/bin/entrypoint.sh; \
     chmod 777 /var/run; \
     cat /root/.docker/utilities.sh >> ~/.bashrc
+
+RUN apt-get clean \
+    && docker-php-source delete \
+    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+    && rm /var/log/lastlog /var/log/faillog
 
 EXPOSE 9000
 
