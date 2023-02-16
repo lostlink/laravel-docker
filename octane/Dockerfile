@@ -271,7 +271,10 @@ COPY --from=composer /usr/bin/composer /usr/local/bin/composer
 # Include NPM
 ###########################################
 RUN if [ ${INCLUDE_NPM} = true ]; then \
-        curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION} | bash - && \
+        wget https://deb.nodesource.com/setup_${NODE_VERSION} && \
+        chmod +x setup_${NODE_VERSION} && \
+        ./setup_${NODE_VERSION} && \
+        rm -fr setup_${NODE_VERSION} && \
         apt-get install -y nodejs \
     fi
 ###########################################

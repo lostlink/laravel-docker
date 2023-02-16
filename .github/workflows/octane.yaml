@@ -13,12 +13,12 @@ jobs:
       fail-fast: false
       matrix:
         build:
-          - {tag: "8.0-cli-buster", platforms: "linux/arm64,linux/amd64"}
-          - {tag: "8.0.26-cli-buster", platforms: "linux/arm64,linux/amd64"}
-          - {tag: "8.1-cli-buster", platforms: "linux/arm64,linux/amd64"}
-          - {tag: "8.1.13-cli-buster", platforms: "linux/arm64,linux/amd64"}
-          - {tag: "8.2-cli-buster", platforms: "linux/arm64,linux/amd64"}
-          - {tag: "latest", platforms: "linux/arm64,linux/amd64"}
+          - {tag: "8.0-cli-buster", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
+          - {tag: "8.0.26-cli-buster", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
+          - {tag: "8.1-cli-buster", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
+          - {tag: "8.1.13-cli-buster", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
+          - {tag: "8.2-cli-buster", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
+          - {tag: "latest", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
     steps:
       - name: Check out code
         uses: actions/checkout@v2
