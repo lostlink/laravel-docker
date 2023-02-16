@@ -19,6 +19,6 @@ else
     initialStuff
     /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
     supercronic /etc/supercronic/laravel
-    if [ "$ENV_ENABLE_HORIZON" = "true" ]; then supervisorctl start horizon; fi
-    if [ "$ENV_ENABLE_SCHEDULER" = "true" ]; then supervisorctl start scheduler; fi
+    if [ "$ENABLE_HORIZON" = "true" ]; then supervisorctl start horizon; fi
+    if [ "$ENABLE_SCHEDULER" = "true" ]; then supervisorctl start scheduler; fi
 fi
