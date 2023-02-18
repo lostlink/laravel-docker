@@ -279,7 +279,7 @@ RUN if [ ${INCLUDE_NPM} = true ]; then \
         chmod +x setup_${NODE_VERSION} && \
         ./setup_${NODE_VERSION} && \
         rm -fr setup_${NODE_VERSION} && \
-        apt-get install -y nodejs \
+        apt-get install -y nodejs; \
     fi
 ###########################################
 
