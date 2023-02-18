@@ -272,6 +272,7 @@ COPY --from=composer /usr/bin/composer /usr/local/bin/composer
 ###########################################
 RUN if [ ${INCLUDE_NPM} = true ]; then \
         wget https://deb.nodesource.com/setup_${NODE_VERSION} && \
+        cat setup_${NODE_VERSION} && \
         chmod +x setup_${NODE_VERSION} && \
         ./setup_${NODE_VERSION} && \
         rm -fr setup_${NODE_VERSION} && \
