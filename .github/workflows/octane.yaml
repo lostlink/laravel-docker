@@ -52,6 +52,7 @@ jobs:
           tags: lostlink/octane:${{ matrix.build.tag }}
           build-args: |
             "PHP_TAG=${{ matrix.build.tag }}"
+            "NODE_VERSION=${{ env.NODE_VERSION }}"
             "TIMEZONE=${{ env.TIMEZONE }}"
             "WWWUSER=${{ env.WWWUSER }}"
             "WWWGROUP=${{ env.WWWGROUP }}"

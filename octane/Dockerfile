@@ -1,6 +1,6 @@
 ARG PHP_TAG=latest
 ARG COMPOSER_TAG=latest
-ARG NODE_VERSION=18.x
+ARG NODE_VERSION=lts.x
 
 ###########################################
 # Default Laravel Install
@@ -17,8 +17,8 @@ RUN composer create-project \
     --no-dev \
     laravel/laravel .
 
-RUN composer require laravel/octane \
-    && php artisan octane:install --server=swoole
+RUN composer require laravel/octane && \
+    php artisan octane:install --server=swoole
 
 RUN sed -i 's/LOG_CHANNEL=stack/LOG_CHANNEL=stderr/g' .env
 
@@ -47,8 +47,8 @@ WORKDIR $ROOT
 
 SHELL ["/bin/bash", "-eou", "pipefail", "-c"]
 
-RUN ln -snf /usr/share/zoneinfo/$TIMEZONE /etc/localtime \
-    && echo $TIMEZONE > /etc/timezone
+RUN ln -snf /usr/share/zoneinfo/$TIMEZONE /etc/localtime && \
+    echo $TIMEZONE > /etc/timezone
 
 RUN apt-get update; \
     apt-get upgrade -yqq; \
@@ -93,7 +93,8 @@ RUN docker-php-ext-install pdo_mysql;
 # zip
 ###########################################
 
-RUN docker-php-ext-configure zip && docker-php-ext-install zip;
+RUN docker-php-ext-configure zip && \
+    docker-php-ext-install zip;
 
 ###########################################
 # mbstring
@@ -109,8 +110,8 @@ RUN docker-php-ext-configure gd \
             --prefix=/usr \
             --with-jpeg \
             --with-webp \
-            --with-freetype \
-    && docker-php-ext-install gd;
+            --with-freetype && \
+    docker-php-ext-install gd;
 
 ###########################################
 # OPcache
@@ -129,9 +130,9 @@ RUN if [ ${INSTALL_OPCACHE} = true ]; then \
 ARG INSTALL_PHPREDIS=true
 
 RUN if [ ${INSTALL_PHPREDIS} = true ]; then \
-      pecl -q install -o -f redis \
-      && rm -rf /tmp/pear \
-      && docker-php-ext-enable redis; \
+      pecl -q install -o -f redis && \
+      rm -rf /tmp/pear && \
+      docker-php-ext-enable redis; \
   fi
 
 ###########################################
@@ -171,9 +172,9 @@ RUN if [ ${INSTALL_EXIF} = true ]; then \
 ARG INSTALL_RDKAFKA=false
 
 RUN if [ ${INSTALL_RDKAFKA} = true ]; then \
-      apt-get install -yqq --no-install-recommends --show-progress librdkafka-dev \
-      && pecl -q install -o -f rdkafka \
-      && docker-php-ext-enable rdkafka; \
+      apt-get install -yqq --no-install-recommends --show-progress librdkafka-dev && \
+      pecl -q install -o -f rdkafka && \
+      docker-php-ext-enable rdkafka; \
   fi
 
 ###########################################
@@ -184,9 +185,9 @@ ARG INSTALL_SWOOLE=true
 ARG SWOOLE_SERVER=openswoole
 
 RUN if [ ${INSTALL_SWOOLE} = true ]; then \
-      apt-get install -yqq --no-install-recommends --show-progress libc-ares-dev \
-      && pecl -q install -o -f -D 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-mysqlnd="yes" enable-cares="yes"' ${SWOOLE_SERVER} \
-      && docker-php-ext-enable ${SWOOLE_SERVER}; \
+      apt-get install -yqq --no-install-recommends --show-progress libc-ares-dev && \
+      pecl -q install -o -f -D 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-mysqlnd="yes" enable-cares="yes"' ${SWOOLE_SERVER} && \
+      docker-php-ext-enable ${SWOOLE_SERVER}; \
     fi
 
 ###########################################################################
@@ -196,9 +197,9 @@ RUN if [ ${INSTALL_SWOOLE} = true ]; then \
 ARG INSTALL_INTL=true
 
 RUN if [ ${INSTALL_INTL} = true ]; then \
-      apt-get install -yqq --no-install-recommends --show-progress zlib1g-dev libicu-dev g++ \
-      && docker-php-ext-configure intl \
-      && docker-php-ext-install intl; \
+      apt-get install -yqq --no-install-recommends --show-progress zlib1g-dev libicu-dev g++ && \
+      docker-php-ext-configure intl && \
+      docker-php-ext-install intl; \
   fi
 
 ###########################################
@@ -208,7 +209,8 @@ RUN if [ ${INSTALL_INTL} = true ]; then \
 ARG INSTALL_MEMCACHED=false
 
 RUN if [ ${INSTALL_MEMCACHED} = true ]; then \
-      pecl -q install -o -f memcached && docker-php-ext-enable memcached; \
+      pecl -q install -o -f memcached && \
+      docker-php-ext-enable memcached; \
   fi
 
 ###########################################
@@ -249,16 +251,16 @@ ARG INSTALL_PG_CLIENT=false
 ARG INSTALL_POSTGIS=false
 
 RUN if [ ${INSTALL_PG_CLIENT} = true ]; then \
-        apt-get install -yqq gnupg \
-        && . /etc/os-release \
-        && echo "deb http://apt.postgresql.org/pub/repos/apt $VERSION_CODENAME-pgdg main" > /etc/apt/sources.list.d/pgdg.list \
-        && curl -sL https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
-        && apt-get update -yqq \
-        && apt-get install -yqq --no-install-recommends --show-progress postgresql-client-12 postgis; \
+        apt-get install -yqq gnupg && \
+        . /etc/os-release && \
+        echo "deb http://apt.postgresql.org/pub/repos/apt $VERSION_CODENAME-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
+        curl -sL https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && \
+        apt-get update -yqq && \
+        apt-get install -yqq --no-install-recommends --show-progress postgresql-client-12 postgis; \
         if [ ${INSTALL_POSTGIS} = true ]; then \
           apt-get install -yqq --no-install-recommends --show-progress postgis; \
-        fi \
-        && apt-get purge -yqq gnupg; \
+        fi && \
+        apt-get purge -yqq gnupg; \
   fi
 
 ###########################################
@@ -274,11 +276,7 @@ COPY --from=composer /usr/bin/composer /usr/local/bin/composer
 ARG INCLUDE_NPM=true
 
 RUN if [ ${INCLUDE_NPM} = true ]; then \
-        wget https://deb.nodesource.com/setup_${NODE_VERSION} && \
-        cat setup_${NODE_VERSION} && \
-        chmod +x setup_${NODE_VERSION} && \
-        ./setup_${NODE_VERSION} && \
-        rm -fr setup_${NODE_VERSION} && \
+        curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION} | bash - && \
         apt-get install -y nodejs; \
     fi
 ###########################################
@@ -286,15 +284,14 @@ RUN if [ ${INCLUDE_NPM} = true ]; then \
 ###########################################
 # Laravel scheduler
 ###########################################
-RUN \
-    wget -q "https://github.com/aptible/supercronic/releases/download/v0.2.1/supercronic-linux-${TARGETARCH}" -O /usr/bin/supercronic \
-    && chmod +x /usr/bin/supercronic \
-    && mkdir -p /etc/supercronic \
-    && echo "*/1 * * * * php ${ROOT}/artisan schedule:run --verbose --no-interaction" > /etc/supercronic/laravel;
+RUN wget -q "https://github.com/aptible/supercronic/releases/download/v0.2.1/supercronic-linux-${TARGETARCH}" -O /usr/bin/supercronic && \
+    chmod +x /usr/bin/supercronic && \
+    mkdir -p /etc/supercronic && \
+    echo "*/1 * * * * php ${ROOT}/artisan schedule:run --verbose --no-interaction" > /etc/supercronic/laravel;
 ###########################################
 
-RUN groupadd --force -g $WWWGROUP octane \
-    && useradd -ms /bin/bash --no-log-init --no-user-group -g $WWWGROUP -u $WWWUSER octane
+RUN groupadd --force -g $WWWGROUP octane && \
+    useradd -ms /bin/bash --no-log-init --no-user-group -g $WWWGROUP -u $WWWUSER octane
 
 COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY ./utilities.sh /root/.docker/utilities.sh
@@ -304,23 +301,18 @@ COPY ./usr/local/etc/php/conf.d/php.ini /usr/local/etc/php/conf.d/octane.ini
 COPY ./usr/local/etc/php/conf.d/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
 COPY --from=composer ${ROOT} ${ROOT}
-RUN mkdir -p \
-  storage/framework/{sessions,views,cache} \
-  storage/logs \
-  bootstrap/cache \
-  && chown -R octane:octane \
-  storage \
-  bootstrap/cache \
-  && chmod -R ug+rwx storage bootstrap/cache
+RUN mkdir -p storage/framework/{sessions,views,cache} storage/logs bootstrap/cache && \
+    chown -R octane:octane storage bootstrap/cache && \
+    chmod -R ug+rwx storage bootstrap/cache
 
 RUN chmod +x /usr/local/bin/entrypoint.sh; \
     chmod 777 /var/run; \
     cat /root/.docker/utilities.sh >> ~/.bashrc
 
-RUN apt-get clean \
-    && docker-php-source delete \
-    && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
-    && rm /var/log/lastlog /var/log/faillog
+RUN apt-get clean && \
+    docker-php-source delete && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+    rm /var/log/lastlog /var/log/faillog
 
 EXPOSE 9000
 
