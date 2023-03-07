@@ -295,8 +295,7 @@ RUN groupadd --force -g $WWWGROUP octane && \
 
 COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY ./utilities.sh /root/.docker/utilities.sh
-COPY ./etc/supervisor/conf.d/supervisord* /etc/supervisor/conf.d/
-COPY ./etc/supervisor/supervisor.conf /etc/supervisor/supervisor.conf
+COPY ./etc/supervisor/ /etc/supervisor/
 COPY ./usr/local/etc/php/conf.d/php.ini /usr/local/etc/php/conf.d/octane.ini
 COPY ./usr/local/etc/php/conf.d/opcache.ini /usr/local/etc/php/conf.d/opcache.ini
 
