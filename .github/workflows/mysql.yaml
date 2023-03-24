@@ -5,6 +5,10 @@ on:
     branches:
       - 'main'
 
+env:
+  ORG_NAME: lostlink
+  APP_NAME: mysql
+
 jobs:
   should_deploy:
     runs-on: ubuntu-latest
@@ -75,10 +79,10 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
-          context: "{{defaultContext}}:mysql"
+          context: "{{defaultContext}}:${{ env.APP_NAME }}"
           platforms: ${{ matrix.build.platforms }}
           push: true
-          tags: lostlink/mysql:${{ matrix.build.tag }}
+          tags: ${{ env.ORG_NAME }}/${{ env.APP_NAME }}:${{ matrix.build.tag }}
           build-args: |
             "MYSQL_TAG=${{ matrix.build.tag }}"
             "TIMEZONE=${{ env.TIMEZONE }}"

@@ -5,6 +5,10 @@ on:
     branches:
       - 'main'
 
+env:
+  ORG_NAME: lostlink
+  APP_NAME: octane
+
 jobs:
   should_deploy:
     runs-on: ubuntu-latest
@@ -77,10 +81,10 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
-          context: "{{defaultContext}}:octane"
+          context: "{{defaultContext}}:${{ env.APP_NAME }}"
           platforms: ${{ matrix.build.platforms }}
           push: true
-          tags: lostlink/octane:${{ matrix.build.tag }}
+          tags: ${{ env.ORG_NAME }}/${{ env.APP_NAME }}:${{ matrix.build.tag }}
           build-args: |
             "PHP_TAG=${{ matrix.build.tag }}"
             "NODE_VERSION=${{ env.NODE_VERSION }}"
