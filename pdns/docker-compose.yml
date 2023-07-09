@@ -1,0 +1,61 @@
+version: '2.4'
+
+volumes:
+  mariadb:
+
+services:
+  mariadb:
+    image: mariadb:10.11
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - mariadb:/var/lib/mysql:z
+    environment:
+      - MYSQL_ROOT_PASSWORD=my-secret-pw
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      timeout: 10s
+      retries: 5
+
+  pdns:
+    build:
+      context: .
+    hostname: ns1.domainlink.test
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - PDNS_config_dir=/etc/powerdns
+      - PDNS_setuid=pdns
+      - PDNS_setgid=pdns
+
+      - PDNS_disable_axfr=yes
+#      - PDNS_allow_axfr_ips=155.138.149.107/32
+
+      - PDNS_api=yes
+      - PDNS_api_key=adtimes4
+      - PDNS_default_ttl=300
+      - PDNS_expand_alias=yes
+
+#      - PDNS_log_dns_details=yes
+#      - PDNS_log_dns_queries=yes
+#      - PDNS_log_timestamp=yes
+#      - PDNS_query_logging=yes
+#      - PDNS_loglevel=9
+
+      - PDNS_master=yes
+      - PDNS_max_queue_length=50000
+      - PDNS_slave=no
+      - PDNS_webserver=yes
+      - PDNS_webserver_address=0.0.0.0
+      - PDNS_webserver_allow_from=0.0.0.0/0,::/0
+      - PDNS_webserver_password=adtimes4
+      - PDNS_zone_cache_refresh-interval=0
+      - PDNS_launch=
+      - PDNS_launch+=gmysql:one,pipe
+      - PDNS_gmysql_one_dbname=dm_dns
+      - PDNS_gmysql_one_host=mariadb
+      - PDNS_gmysql_one_password=my-secret-pw
+      - PDNS_gmysql_one_user=root
+      - PDNS_pipe_abi_version=2
+      - PDNS_pipe_command=/var/lib/powerdns/bin/default.sh
+    depends_on:
+      - mariadb
