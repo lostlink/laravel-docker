@@ -17,7 +17,7 @@ RUN apk add --no-cache \
 RUN pip3 install --no-cache-dir envtpl
 
 ENV
-  VERSION=${PDNS_TAG} \
+  VERSION=${PDNS_VERSION} \
   PDNS_guardian=yes \
   PDNS_setuid=pdns \
   PDNS_setgid=pdns
