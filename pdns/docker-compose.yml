@@ -1,4 +1,4 @@
-version: '2.4'
+version: '3.7'
 
 volumes:
   mariadb:
@@ -27,34 +27,46 @@ services:
       - PDNS_setuid=pdns
       - PDNS_setgid=pdns
 
-      - PDNS_disable_axfr=yes
-#      - PDNS_allow_axfr_ips=155.138.149.107/32
+      - PDNS_master=yes
+      - PDNS_slave=no
 
-      - PDNS_api=yes
-      - PDNS_api_key=adtimes4
       - PDNS_default_ttl=300
       - PDNS_expand_alias=yes
-
-#      - PDNS_log_dns_details=yes
-#      - PDNS_log_dns_queries=yes
-#      - PDNS_log_timestamp=yes
-#      - PDNS_query_logging=yes
-#      - PDNS_loglevel=9
-
-      - PDNS_master=yes
       - PDNS_max_queue_length=50000
-      - PDNS_slave=no
+      - PDNS_zone_cache_refresh-interval=0
+
+      # Define API Access and set a secret API key
+      - PDNS_api=yes
+      - PDNS_api_key=secret-apikey
+
+      # Logging Setup
+      #- PDNS_log_dns_details=yes
+      #- PDNS_log_dns_queries=yes
+      #- PDNS_log_timestamp=yes
+      #- PDNS_query_logging=yes
+      #- PDNS_loglevel=9
+
+      # Define AFXR Access (zone transfers) and the authorized IPs
+      #- PDNS_disable_axfr=yes
+      #- PDNS_allow_axfr_ips=127.0.0.1/32
+
+      # Setup webserver access and set a secret webserver password
       - PDNS_webserver=yes
       - PDNS_webserver_address=0.0.0.0
       - PDNS_webserver_allow_from=0.0.0.0/0,::/0
-      - PDNS_webserver_password=adtimes4
-      - PDNS_zone_cache_refresh-interval=0
+      - PDNS_webserver_password=secret-webserver-password
+
+      # Define the backend(s) to use, by default MySQL and Pipe
       - PDNS_launch=
       - PDNS_launch+=gmysql:one,pipe
-      - PDNS_gmysql_one_dbname=dm_dns
+
+      # Define MySQL host, db, user and password which should match with whatever MYSQL_ROOT_PASSWORD is set to
       - PDNS_gmysql_one_host=mariadb
-      - PDNS_gmysql_one_password=my-secret-pw
+      - PDNS_gmysql_one_dbname=domainlink_pdns
       - PDNS_gmysql_one_user=root
+      - PDNS_gmysql_one_password=my-secret-pw
+
+      # Define the pipe backend and the script to run for queries
       - PDNS_pipe_abi_version=2
       - PDNS_pipe_command=/var/lib/powerdns/bin/default.sh
     depends_on:
