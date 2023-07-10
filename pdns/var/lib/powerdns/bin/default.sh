@@ -1,9 +1,9 @@
 #!/bin/sh
 
 # Set default variables
-default_ipv4="44.213.108.239"
-default_ipv6="2600:1f18:65b8:7a02:b45a:a290:c7d7:67af"
-default_mx="mxa.srvxx.dev"
+default_ipv4="${PIPE_DEFAULT_IPV4:-44.213.108.239}"
+default_ipv6="${PIPE_DEFAULT_IPV6:-2600:1f18:65b8:7a02:b45a:a290:c7d7:67af}"
+default_mx="${PIPE_DEFAULT_MX:-mxa.srvxx.dev}"
 
 # Read input line by line from stdin
 while IFS=$'#\t\n' read -r input; do

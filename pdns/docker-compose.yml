@@ -1,28 +1,35 @@
 version: '3.7'
 
 volumes:
-  mariadb:
+  mysql:
 
 services:
-  mariadb:
-    image: mariadb:10.11
+  mysql:
+    image: lostlink/mysql:8.0
+    environment:
+      - TZ=UTC
+      - MYSQL_ROOT_PASSWORD=my-secret-pw
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - mariadb:/var/lib/mysql:z
-    environment:
-      - MYSQL_ROOT_PASSWORD=my-secret-pw
+      - mysql:/var/lib/mysql:z
     healthcheck:
       test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
       timeout: 10s
       retries: 5
 
   pdns:
+#    image: lostlink/pdns:4.7
     build:
       context: .
     hostname: ns1.domainlink.test
     volumes:
       - /etc/localtime:/etc/localtime:ro
+    ports:
+      - "${FORWARD_PDNS_PORT:-53}:${PDNS_PORT:-53}/udp"
+      - "${FORWARD_PDNS_PORT:-53}:${PDNS_PORT:-53}/tcp"
+      - "${FORWARD_PDNS_UI_PORT:-8081}:${PDNS_UI_PORT:-8081}"
     environment:
+      - TZ=UTC
       - PDNS_config_dir=/etc/powerdns
       - PDNS_setuid=pdns
       - PDNS_setgid=pdns
@@ -61,7 +68,7 @@ services:
       - PDNS_launch+=gmysql:one,pipe
 
       # Define MySQL host, db, user and password which should match with whatever MYSQL_ROOT_PASSWORD is set to
-      - PDNS_gmysql_one_host=mariadb
+      - PDNS_gmysql_one_host=mysql
       - PDNS_gmysql_one_dbname=domainlink_pdns
       - PDNS_gmysql_one_user=root
       - PDNS_gmysql_one_password=my-secret-pw
@@ -69,5 +76,8 @@ services:
       # Define the pipe backend and the script to run for queries
       - PDNS_pipe_abi_version=2
       - PDNS_pipe_command=/var/lib/powerdns/bin/default.sh
+      - PIPE_DEFAULT_IPV4=127.0.0.1
+      - PIPE_DEFAULT_IPV6=::1
+      - PIPE_DEFAULT_MX=localhost
     depends_on:
-      - mariadb
+      - mysql
