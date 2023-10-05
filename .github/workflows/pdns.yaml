@@ -83,4 +83,4 @@ jobs:
           push: true
           tags: ${{ env.ORG_NAME }}/${{ env.APP_NAME }}:${{ matrix.build.tag }}
           build-args: |
-            "MATRIX_TAG=${{ matrix.build.tag }}
+            "MATRIX_TAG=${{ matrix.build.tag }}"
