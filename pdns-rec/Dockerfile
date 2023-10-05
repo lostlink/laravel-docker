@@ -21,10 +21,17 @@ ENV \
   PDNS_setuid=recursor \
   PDNS_setgid=recursor \
   PDNS_local_port=53 \
-  PDNS_local_address=0.0.0.0
+  PDNS_local_address=0.0.0.0 \
+  PDNS_include_dir=/etc/pdns/recursor.d
 
+COPY ./etc/pdns/recursor.d /etc/pdns/recursor.d
+COPY ./etc/pdns/zones /etc/pdns/zones
 COPY ./etc/pdns/recursor.conf.tpl /
 COPY ./docker-entrypoint.sh /
+
+HEALTHCHECK --interval=5s --timeout=3s CMD \
+    drill health.localhost.tld @localhost | grep -q 'rcode: NXDOMAIN' && \
+    drill localhost @localhost | grep -q 'rcode: NOERROR'
 
 ENTRYPOINT [ "/docker-entrypoint.sh" ]
 

@@ -7,6 +7,6 @@ envtpl < /recursor.conf.tpl > /etc/pdns/recursor.conf
 
 mkdir -p /var/run/pdns-recursor
 
-chown recursor: /etc/pdns/recursor.conf /var/run/pdns-recursor
+chown -R recursor: /etc/pdns/recursor.conf /etc/pdns/recursor.d /etc/pdns/zones /var/run/pdns-recursor
 
 exec "$@"
