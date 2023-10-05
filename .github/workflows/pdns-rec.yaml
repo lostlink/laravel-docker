@@ -7,7 +7,7 @@ on:
 
 env:
   ORG_NAME: lostlink
-  APP_NAME: pdns
+  APP_NAME: pdns-rec
 
 jobs:
   should_deploy:
@@ -48,8 +48,8 @@ jobs:
       fail-fast: false
       matrix:
         build:
-          - {tag: "4.7", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
-          - {tag: "latest", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
+          - {tag: "4.8", version: "4.8", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
+          - {tag: "latest",  version: "4.8", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
 
     steps:
       - name: Check out code
@@ -83,4 +83,4 @@ jobs:
           push: true
           tags: ${{ env.ORG_NAME }}/${{ env.APP_NAME }}:${{ matrix.build.tag }}
           build-args: |
-            "PDNS_VERSION=4.7"
+            "PDNS_VERSION=${{ matrix.build.version }}"

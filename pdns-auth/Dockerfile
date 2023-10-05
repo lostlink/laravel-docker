@@ -1,15 +1,17 @@
 ARG PDNS_VERSION=4.7
 
-FROM alpine:3.18.2
+FROM alpine:3.18.4
+
+ARG PDNS_VERSION
 
 LABEL maintainer="Nuno Souto <nsouto@lostlink.net>"
 
 RUN apk add --no-cache \
     mariadb-client \
-    pdns \
-    pdns-backend-mysql \
-    pdns-backend-pipe \
-    pdns-backend-remote \
+    pdns~=${PDNS_VERSION} \
+    pdns-backend-mysql~=${PDNS_VERSION} \
+    pdns-backend-pipe~=${PDNS_VERSION} \
+    pdns-backend-remote~=${PDNS_VERSION} \
     pdns-doc \
     py3-pip \
     python3

@@ -1,0 +1,19 @@
+version: '3.7'
+
+services:
+  pdns-rec:
+#    image: lostlink/pdns-rec:4.9
+    build:
+      context: .
+    hostname: ns3.domainlink.test
+    environment:
+      - TZ=UTC
+      - PDNS_config_dir=/etc/pdns
+      - PDNS_setuid=recursor
+      - PDNS_setgid=recursor
+      - PDNS_local_port=${PDNS_PORT:-53}
+    ports:
+      - "${FORWARD_PDNS_PORT:-53}:${PDNS_PORT:-53}/udp"
+      - "${FORWARD_PDNS_PORT:-53}:${PDNS_PORT:-53}/tcp"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
