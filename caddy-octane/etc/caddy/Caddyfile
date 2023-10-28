@@ -1,7 +1,11 @@
 {
+    http_port 2080
+    https_port 2443
+
     on_demand_tls {
         ask {$DOMAIN_API_CHECK_URL}
     }
+
     storage dynamodb {$DYNAMODB_TABLE_NAME} {
         aws_region {$AWS_REGION}
     }
