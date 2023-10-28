@@ -23,7 +23,7 @@ services:
 #    image: lostlink/pdns:4.7
     build:
       context: .
-    hostname: ns1.domainlink.test
+    hostname: ns1.pdns.test
     depends_on:
       - mysql
     environment:
@@ -78,8 +78,8 @@ services:
       - PIPE_DEFAULT_IPV6=::1
       - PIPE_DEFAULT_MX=localhost
     ports:
-      - "${FORWARD_PDNS_PORT:-53}:${PDNS_PORT:-53}/udp"
-      - "${FORWARD_PDNS_PORT:-53}:${PDNS_PORT:-53}/tcp"
+      - "${FORWARD_PDNS_TCP_PORT:-53}:${PDNS_PORT:-53}/tcp"
+      - "${FORWARD_PDNS_UDP_PORT:-53}:${PDNS_PORT:-53}/udp"
       - "${FORWARD_PDNS_UI_PORT:-8081}:${PDNS_UI_PORT:-8081}"
     volumes:
       - /etc/localtime:/etc/localtime:ro

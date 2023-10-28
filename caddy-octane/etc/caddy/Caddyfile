@@ -1,0 +1,21 @@
+{
+    on_demand_tls {
+        ask {$DOMAIN_API_CHECK_URL}
+    }
+    storage dynamodb {$DYNAMODB_TABLE_NAME} {
+        aws_region {$AWS_REGION}
+    }
+}
+
+:2080 {
+    reverse_proxy localhost:9000
+}
+
+:2443 {
+    tls {$LETS_ENCRYPT_EMAIL} {
+        on_demand
+        dns powerdns {$POWERDNS_SERVER_URL} {$POWERDNS_API_TOKEN}
+    }
+
+    reverse_proxy localhost:9000
+}
