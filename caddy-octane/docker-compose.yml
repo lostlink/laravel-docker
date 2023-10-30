@@ -4,29 +4,35 @@ volumes:
   mysql:
 
 services:
-# TODO: Add Local dynamodb for easy offline setup
-#  dynamodb:
+  dynamodb:
+    image: amazon/dynamodb-local
+    ports:
+      - "${FORWARD_DYNAMODB_PORT:-8000}:${DYNAMODDB_PORT:-8000}"
 
   caddy-octane:
     build:
       context: .
-    hostname: caddy-octane.domainlink.test
-# TODO: Enable dynamodb dependency once the service is added to the compose file
-#    depends_on:
-#      - dynamodb
+      args:
+        - OCTANE_TAG=${OCTANE_TAG}
+        - CADDY_TAG=${CADDY_TAG}
+        - CADDY_BUILDER_TAG=${CADDY_BUILDER_TAG}
+    depends_on:
+      - dynamodb
     environment:
-      - DOMAIN_API_CHECK_URL=${CADDY_DOMAIN_API_CHECK_URL}
-      - POWERDNS_SERVER_URL=${CADDY_POWERDNS_SERVER_URL}
-      - POWERDNS_API_TOKEN=${CADDY_POWERDNS_API_TOKEN}
-      - LETS_ENCRYPT_EMAIL=${CADDY_LETS_ENCRYPT_EMAIL}
-      - DYNAMODB_TABLE_NAME=${CADDY_DYNAMODB_TABLE_NAME}
-      - AWS_REGION=${CADDY_AWS_REGION}
-      - AWS_ACCESS_KEY_ID=${CADDY_AWS_ACCESS_KEY_ID}
-      - AWS_SECRET_ACCESS_KEY=${CADDY_AWS_SECRET_ACCESS_KEY}
+      - CADDY_ORIGIN_URL=${CADDY_ORIGIN_URL}
+      - CADDY_ORIGIN_DOMAIN_CHECK_URL=${CADDY_ORIGIN_DOMAIN_CHECK_URL}
+      - CADDY_LETS_ENCRYPT_EMAIL=${CADDY_LETS_ENCRYPT_EMAIL}
+      - CADDY_POWERDNS_SERVER_URL=${CADDY_POWERDNS_SERVER_URL}
+      - CADDY_POWERDNS_API_TOKEN=${CADDY_POWERDNS_API_TOKEN}
+      - CADDY_DYNAMODB_TABLE_NAME=${CADDY_DYNAMODB_TABLE_NAME}
+      - CADDY_DYNAMODB_AWS_REGION=${CADDY_DYNAMODB_AWS_REGION}
+      - CADDY_DYNAMODB_AWS_ENDPOINT=${CADDY_DYNAMODB_AWS_ENDPOINT}
+      - AWS_ACCESS_KEY_ID=${CADDY_DYNAMODB_AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${CADDY_DYNAMODB_AWS_SECRET_ACCESS_KEY}
     ports:
       - "${FORWARD_CADDY_ADMIN_PORT:-2019}:${CADDY_ADMIN_PORT:-2019}"
-      - "${FORWARD_CADDY_HTTP_PORT:-2080}:${CADDY_HTTP_PORT:-2080}"
-      - "${FORWARD_CADDY_HTTPS_PORT:-2443}:${CADDY_HTTPS_PORT:-2443}"
-      - "${FORWARD_APP_PORT:-9000}:${OCTANE_APP_PORT:-9000}"
+      - "${FORWARD_CADDY_HTTP_PORT:-2080}:${CADDY_HTTP_PORT:-80}"
+      - "${FORWARD_CADDY_HTTPS_PORT:-2443}:${CADDY_HTTPS_PORT:-443}"
+      - "${FORWARD_APP_PORT:-9001}:${OCTANE_APP_PORT:-9000}"
     volumes:
       - /etc/localtime:/etc/localtime:ro

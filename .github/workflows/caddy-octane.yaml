@@ -48,12 +48,12 @@ jobs:
       fail-fast: false
       matrix:
         build:
-          - {tag: "8.0-cli-buster", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
-          - {tag: "8.0.26-cli-buster", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
-          - {tag: "8.1-cli-buster", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
-          - {tag: "8.1.13-cli-buster", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
-          - {tag: "8.2-cli-buster", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
-          - {tag: "latest", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
+          - {tag: "8.0-cli-buster", caddy-tag: "2.7", caddy-builder-tag: "2.7", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
+          - {tag: "8.0.26-cli-buster", caddy-tag: "2.7", caddy-builder-tag: "2.7",  platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
+          - {tag: "8.1-cli-buster", caddy-tag: "2.7", caddy-builder-tag: "2.7",  platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
+          - {tag: "8.1.13-cli-buster", caddy-tag: "2.7", caddy-builder-tag: "2.7",  platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
+          - {tag: "8.2-cli-buster", caddy-tag: "2.7", caddy-builder-tag: "2.7",  platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
+          - {tag: "latest", caddy-tag: "2.7", caddy-builder-tag: "2.7",  platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
     steps:
       - name: Check out code
         uses: actions/checkout@v3
@@ -85,3 +85,8 @@ jobs:
           platforms: ${{ matrix.build.platforms }}
           push: true
           tags: ${{ env.ORG_NAME }}/${{ env.APP_NAME }}:${{ matrix.build.tag }}
+          args:
+            "OCTANE_TAG=${{ matrix.build.tag }}"
+            "CADDY_TAG=${{ matrix.build.caddy-tag }}"
+            "CADDY_BUILDER_TAG=${{ matrix.build.caddy-builder-tag }}"
+            "CADDY_ORIGIN_URL=${{ env.CADDY_ORIGIN_URL }}"
