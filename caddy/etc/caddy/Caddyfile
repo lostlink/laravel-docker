@@ -1,0 +1,22 @@
+{
+    http_port 80
+    https_port 443
+
+    on_demand_tls {
+        ask {$ORIGIN_DOMAIN_CHECK_URL}
+    }
+
+    storage dynamodb {$DYNAMODB_TABLE_NAME} {
+        aws_region {$AWS_REGION}
+    }
+}
+
+## TODO: Allow configuring multiple origin URL/Servers
+: {
+    tls {$LETS_ENCRYPT_EMAIL} {
+        on_demand
+        dns powerdns {$POWERDNS_SERVER_URL} {$POWERDNS_API_TOKEN}
+    }
+
+    reverse_proxy {$ORIGIN_URL}
+}

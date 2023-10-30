@@ -1,0 +1,38 @@
+version: '3.7'
+
+volumes:
+  mysql:
+
+services:
+  dynamodb:
+    image: amazon/dynamodb-local
+    ports:
+      - "${FORWARD_DYNAMODB_PORT:-8000}:${DYNAMODDB_PORT:-8000}"
+
+  caddy:
+    build:
+      context: .
+      args:
+        - CADDY_TAG=${CADDY_TAG}
+    depends_on:
+      - dynamodb
+    environment:
+      ## Caddy Reverse Proxy Configuration
+      - ORIGIN_URL=${CADDY_ORIGIN_URL}
+      - ORIGIN_DOMAIN_CHECK_URL=${CADDY_ORIGIN_DOMAIN_CHECK_URL}
+      ## LetsEncrypt
+      - LETS_ENCRYPT_EMAIL=${CADDY_LETS_ENCRYPT_EMAIL}
+      ## PowerDNS Integration
+      - POWERDNS_SERVER_URL=${CADDY_POWERDNS_SERVER_URL}
+      - POWERDNS_API_TOKEN=${CADDY_POWERDNS_API_TOKEN}
+      ## AWS DynamoDB Integration
+      - DYNAMODB_TABLE_NAME=${CADDY_DYNAMODB_TABLE_NAME}
+      - AWS_REGION=${CADDY_DYNAMODB_AWS_REGION}
+      - AWS_ACCESS_KEY_ID=${CADDY_DYNAMODB_AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${CADDY_DYNAMODB_AWS_SECRET_ACCESS_KEY}
+    ports:
+      - "${FORWARD_CADDY_ADMIN_PORT:-2019}:${CADDY_ADMIN_PORT:-2019}"
+      - "${FORWARD_CADDY_HTTP_PORT:-2080}:${CADDY_HTTP_PORT:-80}"
+      - "${FORWARD_CADDY_HTTPS_PORT:-2443}:${CADDY_HTTPS_PORT:-443}"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
