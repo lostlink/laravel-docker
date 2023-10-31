@@ -1,4 +1,4 @@
-name: Build & Push Caddy-Octane
+name: Build & Push CaddyOctane
 
 on:
   push:
