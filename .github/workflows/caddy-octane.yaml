@@ -85,7 +85,7 @@ jobs:
           platforms: ${{ matrix.build.platforms }}
           push: true
           tags: ${{ env.ORG_NAME }}/${{ env.APP_NAME }}:${{ matrix.build.tag }}
-          build-args:
+          build-args: |
             "OCTANE_TAG=${{ matrix.build.tag }}"
             "CADDY_TAG=${{ matrix.build.caddy-tag }}"
             "CADDY_BUILDER_TAG=${{ matrix.build.caddy-builder-tag }}"
