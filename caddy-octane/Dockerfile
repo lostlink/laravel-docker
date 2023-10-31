@@ -2,7 +2,7 @@ ARG OCTANE_TAG=latest
 ARG CADDY_TAG=latest
 ARG CADDY_BUILDER_TAG=builder
 
-FROM caddy:builder AS builder
+FROM caddy:${CADDY_BUILDER_TAG} AS builder
 
 RUN xcaddy build \
     --with github.com/silinternational/certmagic-storage-dynamodb/v3 \
@@ -20,14 +20,6 @@ LABEL maintainer="Nuno Souto <nsouto@lostlink.net>"
 ARG CADDY_ORIGIN_URL
 
 ENV CADDY_ORIGIN_URL=${CADDY_ORIGIN_URL}
-
-RUN apt-get update; \
-    apt-get upgrade -yqq; \
-    apt-get install -yqq --no-install-recommends --show-progress debian-keyring debian-archive-keyring apt-transport-https gpg; \
-    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg; \
-    curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | tee /etc/apt/sources.list.d/caddy-stable.list; \
-    apt-get update; \
-    apt-get install -yqq --no-install-recommends --show-progress caddy;
 
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy
 
