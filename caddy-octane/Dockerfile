@@ -10,6 +10,8 @@ FROM lostlink/octane:${OCTANE_TAG}
 
 LABEL maintainer="Nuno Souto <nsouto@lostlink.net>"
 
+ARG CADDY_TAG
+
 COPY --from=lostlink/caddy:${CADDY_TAG} /usr/bin/caddy /usr/bin/caddy
 
 COPY ./etc/supervisor/ /etc/supervisor/
