@@ -104,77 +104,76 @@ RUN apt-get update; \
             libzstd1 \
             procps
 
-RUN \
     ###########################################
     # pdo_mysql
     ###########################################
-    docker-php-ext-install pdo_mysql \
+RUN docker-php-ext-install pdo_mysql
     ###########################################
     # zip
     ###########################################
-    && docker-php-ext-configure zip \
-    && docker-php-ext-install zip \
+RUN docker-php-ext-configure zip \
+    && docker-php-ext-install zip
     ###########################################
     # mbstring
     ###########################################
-    && docker-php-ext-install mbstring \
+RUN docker-php-ext-install mbstring
     ###########################################
     # GD
     ###########################################
-    && docker-php-ext-configure gd \
+RUN docker-php-ext-configure gd \
         --prefix=/usr \
         --with-jpeg \
         --with-webp \
         --with-freetype \
-    && docker-php-ext-install gd \
+    && docker-php-ext-install gd
     ###########################################
     # OPcache
     ###########################################
-    && if [ ${INSTALL_OPCACHE} = true ]; then \
-          docker-php-ext-install opcache; \
-       fi \
+RUN if [ ${INSTALL_OPCACHE} = true ]; then \
+        docker-php-ext-install opcache; \
+    fi
     ###########################################
     # PHP Redis
     ###########################################
-    && if [ ${INSTALL_PHPREDIS} = true ]; then \
-          pecl -q install -o -f redis && \
-          rm -rf /tmp/pear && \
-          docker-php-ext-enable redis; \
-       fi \
+RUN if [ ${INSTALL_PHPREDIS} = true ]; then \
+        pecl -q install -o -f redis && \
+        rm -rf /tmp/pear && \
+        docker-php-ext-enable redis; \
+    fi
     ###########################################
     # PCNTL
     ###########################################
-    && if [ ${INSTALL_PCNTL} = true ]; then \
-          docker-php-ext-install pcntl; \
-       fi \
+RUN if [ ${INSTALL_PCNTL} = true ]; then \
+        docker-php-ext-install pcntl; \
+    fi
     ###########################################
     # BCMath
     ###########################################
-    && if [ ${INSTALL_BCMATH} = true ]; then \
-          docker-php-ext-install bcmath; \
-       fi \
+RUN if [ ${INSTALL_BCMATH} = true ]; then \
+        docker-php-ext-install bcmath; \
+    fi
     ###########################################
     # Exif
     ###########################################
-    && if [ ${INSTALL_EXIF} = true ]; then \
-          docker-php-ext-install exif; \
-       fi \
+RUN if [ ${INSTALL_EXIF} = true ]; then \
+        docker-php-ext-install exif; \
+    fi
     ###########################################
     # RDKAFKA
     ###########################################
-    && if [ ${INSTALL_RDKAFKA} = true ]; then \
-          apt-get install -yqq --no-install-recommends --show-progress librdkafka-dev && \
-          pecl -q install -o -f rdkafka && \
-          docker-php-ext-enable rdkafka; \
-       fi \
+RUN if [ ${INSTALL_RDKAFKA} = true ]; then \
+        apt-get install -yqq --no-install-recommends --show-progress librdkafka-dev && \
+        pecl -q install -o -f rdkafka && \
+        docker-php-ext-enable rdkafka; \
+    fi
     ###########################################
     # OpenSwoole/Swoole extension
     ###########################################
-    && if [ ${INSTALL_SWOOLE} = true ]; then \
-          apt-get install -yqq --no-install-recommends --show-progress libc-ares-dev && \
-          pecl -q install -o -f -D 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-mysqlnd="yes" enable-cares="yes"' ${SWOOLE_SERVER} && \
-          docker-php-ext-enable ${SWOOLE_SERVER}; \
-       fi \
+RUN if [ ${INSTALL_SWOOLE} = true ]; then \
+        apt-get install -yqq --no-install-recommends --show-progress libc-ares-dev && \
+        pecl -q install -o -f -D 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-mysqlnd="yes" enable-cares="yes"' ${SWOOLE_SERVER} && \
+        docker-php-ext-enable ${SWOOLE_SERVER}; \
+    fi
     ###########################################
     # RoadRunner Binary
     ###########################################
@@ -183,51 +182,51 @@ RUN \
     ###########################################################################
     # Human Language and Character Encoding Support
     ###########################################################################
-    && if [ ${INSTALL_INTL} = true ]; then \
-          apt-get install -yqq --no-install-recommends --show-progress zlib1g-dev libicu-dev g++ && \
-          docker-php-ext-configure intl && \
-          docker-php-ext-install intl; \
-       fi \
+RUN if [ ${INSTALL_INTL} = true ]; then \
+        apt-get install -yqq --no-install-recommends --show-progress zlib1g-dev libicu-dev g++ && \
+        docker-php-ext-configure intl && \
+        docker-php-ext-install intl; \
+    fi
     ###########################################
     # Memcached
     ###########################################
-    && if [ ${INSTALL_MEMCACHED} = true ]; then \
-          pecl -q install -o -f memcached && \
-          docker-php-ext-enable memcached; \
-       fi \
+RUN if [ ${INSTALL_MEMCACHED} = true ]; then \
+        pecl -q install -o -f memcached && \
+        docker-php-ext-enable memcached; \
+    fi
     ###########################################
     # MySQL Client
     ###########################################
-    && if [ ${INSTALL_MYSQL_CLIENT} = true ]; then \
-          apt-get install -yqq --no-install-recommends --show-progress default-mysql-client; \
-       fi \
+RUN if [ ${INSTALL_MYSQL_CLIENT} = true ]; then \
+        apt-get install -yqq --no-install-recommends --show-progress default-mysql-client; \
+    fi
     ###########################################
     # pdo_pgsql
     ###########################################
-    && if [ ${INSTALL_PDO_PGSQL} = true ]; then \
-          docker-php-ext-install pdo_pgsql; \
-       fi \
+RUN if [ ${INSTALL_PDO_PGSQL} = true ]; then \
+        docker-php-ext-install pdo_pgsql; \
+    fi
     ###########################################
     # pgsql
     ###########################################
-    && if [ ${INSTALL_PGSQL} = true ]; then \
-          docker-php-ext-install pgsql; \
-       fi \
+RUN if [ ${INSTALL_PGSQL} = true ]; then \
+        docker-php-ext-install pgsql; \
+    fi
     ###########################################
     # pgsql client and postgis
     ###########################################
-    && if [ ${INSTALL_PG_CLIENT} = true ]; then \
-            apt-get install -yqq gnupg && \
-            . /etc/os-release && \
-            echo "deb http://apt.postgresql.org/pub/repos/apt $VERSION_CODENAME-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
-            curl -sL https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && \
-            apt-get update -yqq && \
-            apt-get install -yqq --no-install-recommends --show-progress postgresql-client-12 postgis; \
-            if [ ${INSTALL_POSTGIS} = true ]; then \
-              apt-get install -yqq --no-install-recommends --show-progress postgis; \
-            fi && \
-            apt-get purge -yqq gnupg; \
-       fi
+RUN if [ ${INSTALL_PG_CLIENT} = true ]; then \
+          apt-get install -yqq gnupg && \
+          . /etc/os-release && \
+          echo "deb http://apt.postgresql.org/pub/repos/apt $VERSION_CODENAME-pgdg main" > /etc/apt/sources.list.d/pgdg.list && \
+          curl -sL https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - && \
+          apt-get update -yqq && \
+          apt-get install -yqq --no-install-recommends --show-progress postgresql-client-12 postgis; \
+          if [ ${INSTALL_POSTGIS} = true ]; then \
+            apt-get install -yqq --no-install-recommends --show-progress postgis; \
+          fi && \
+          apt-get purge -yqq gnupg; \
+    fi
 
 ###########################################
 # Include composer
