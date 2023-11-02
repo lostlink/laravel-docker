@@ -119,6 +119,7 @@ RUN docker-php-ext-configure zip \
     # mbstring
     ###########################################
 RUN docker-php-ext-install mbstring
+
     ###########################################
     # GD
     ###########################################
