@@ -28,7 +28,7 @@ jobs:
       - name: Filter and set Build Status
         id: build
         run: |
-          unique_entries=$(jq -r '.[] | select(test("caddy"))' $HOME/files.json | awk -v RS=' ' '!a[$1]++')
+          unique_entries=$(jq -r '.[] | select(test("\\<caddy\\>"))' $HOME/files.json | awk -v RS=' ' '!a[$1]++')
           if [[ ! -z "$unique_entries" ]]
           then
             status="deploy"

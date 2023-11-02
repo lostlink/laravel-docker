@@ -1,12 +1,5 @@
 ARG OCTANE_TAG=latest
 ARG CADDY_TAG=latest
-ARG CADDY_BUILDER_TAG=builder
-
-FROM caddy:${CADDY_BUILDER_TAG} AS builder
-
-RUN xcaddy build \
-    --with github.com/silinternational/certmagic-storage-dynamodb/v3 \
-    --with github.com/caddy-dns/powerdns
 
 # TODO: Build the octane image locally and use it here, instead of pulling from dockerhub
 #  This should work on GithubAction and locally using the docker buildx build command
@@ -17,11 +10,7 @@ FROM lostlink/octane:${OCTANE_TAG}
 
 LABEL maintainer="Nuno Souto <nsouto@lostlink.net>"
 
-ARG CADDY_ORIGIN_URL
-
-ENV CADDY_ORIGIN_URL=${CADDY_ORIGIN_URL}
-
-COPY --from=builder /usr/bin/caddy /usr/bin/caddy
+COPY --from=lostlink/caddy:${CADDY_TAG} /usr/bin/caddy /usr/bin/caddy
 
 COPY ./etc/supervisor/ /etc/supervisor/
 COPY ./etc/caddy/ /etc/caddy/
