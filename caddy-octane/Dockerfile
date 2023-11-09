@@ -8,7 +8,7 @@ ARG CADDY_TAG=latest
 
 FROM lostlink/caddy:${CADDY_TAG} AS caddy
 
-FROM lostlink/octane:${OCTANE_TAG}
+FROM lostlink/octane:${OCTANE_TAG} AS octane
 
 LABEL maintainer="Nuno Souto <nsouto@lostlink.net>"
 
