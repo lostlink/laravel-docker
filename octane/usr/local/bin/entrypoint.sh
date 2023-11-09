@@ -26,14 +26,14 @@ else
       export APP_ENV=production
   fi
 
-  if [ "${APP_ENV,,}" == "production" ]; then
-    echo "Starting container in: ${APP_ENV} mode"
-    export OCTANE_PROD=true;
-    export OCTANE_DEV=false;
-  else
+  if [ "${APP_ENV,,}" == "local" ]; then
     echo "Starting container in: ${APP_ENV} mode"
     export OCTANE_PROD=false;
     export OCTANE_DEV=true;
+  else
+    echo "Starting container in: ${APP_ENV} mode"
+    export OCTANE_PROD=true;
+    export OCTANE_DEV=false;
   fi
 
   exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
