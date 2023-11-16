@@ -5,6 +5,7 @@ FROM caddy:${CADDY_BUILDER_TAG} AS builder
 
 RUN xcaddy build \
     --with github.com/silinternational/certmagic-storage-dynamodb/v3 \
+    --with github.com/zhangjiayin/caddy-mysql-storage \
     --with github.com/caddy-dns/powerdns
 
 # TODO: Build the octane image locally and use it here, instead of pulling from dockerhub
