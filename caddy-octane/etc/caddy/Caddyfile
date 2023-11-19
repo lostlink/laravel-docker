@@ -1,22 +1,22 @@
 {
-    http_port 80
-    https_port 443
+	on_demand_tls {
+		ask {$CADDY_ORIGIN_DOMAIN_CHECK_URL}
+	}
 
-    on_demand_tls {
-        ask {$CADDY_ORIGIN_DOMAIN_CHECK_URL}
-    }
-
-    storage dynamodb {$CADDY_DYNAMODB_TABLE_NAME} {
-        aws_region {$CADDY_DYNAMODB_AWS_REGION}
-    }
+	storage dynamodb {$CADDY_DYNAMODB_TABLE_NAME} {
+		aws_region {$CADDY_DYNAMODB_AWS_REGION}
+	}
 }
 
-## TODO: Allow configuring multiple origin URL/Servers
-: {
-    tls {$CADDY_LETS_ENCRYPT_EMAIL} {
-        on_demand
-        dns powerdns {$CADDY_POWERDNS_SERVER_URL} {$CADDY_POWERDNS_API_TOKEN}
-    }
+:80 {
+	reverse_proxy {$CADDY_ORIGIN_URL}
+}
 
-    reverse_proxy {$CADDY_ORIGIN_URL}
+:443 {
+	tls {$CADDY_LETS_ENCRYPT_EMAIL} {
+		on_demand
+		dns powerdns {$CADDY_POWERDNS_SERVER_URL} {$CADDY_POWERDNS_API_TOKEN}
+	}
+
+	reverse_proxy {$CADDY_ORIGIN_URL}
 }
