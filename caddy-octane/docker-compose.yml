@@ -9,6 +9,7 @@ services:
     ports:
       - "${FORWARD_DYNAMODB_PORT:-8000}:${DYNAMODDB_PORT:-8000}"
 
+
   caddy-octane:
     build:
       context: .
