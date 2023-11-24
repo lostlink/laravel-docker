@@ -49,10 +49,18 @@ jobs:
       matrix:
         build:
           - {tag: "8.0-cli-buster", platforms: "linux/arm64,linux/amd64"}
+          - {tag: "8.0-cli-bullseye", platforms: "linux/arm64,linux/amd64"}
           - {tag: "8.0.30-cli-buster", platforms: "linux/arm64,linux/amd64"}
+          - {tag: "8.0.30-cli-bullseye", platforms: "linux/arm64,linux/amd64"}
           - {tag: "8.1-cli-buster", platforms: "linux/arm64,linux/amd64"}
-          - {tag: "8.1.25-cli-buster", platforms: "linux/arm64,linux/amd64"}
+          - {tag: "8.1-cli-bullseye", platforms: "linux/arm64,linux/amd64"}
+          - {tag: "8.1-cli-bookworm", platforms: "linux/arm64,linux/amd64"}
+          - {tag: "8.1.25-cli-bullseye", platforms: "linux/arm64,linux/amd64"}
+          - {tag: "8.1.25-cli-bookworm", platforms: "linux/arm64,linux/amd64"}
           - {tag: "8.2-cli-buster", platforms: "linux/arm64,linux/amd64"}
+          - {tag: "8.2-cli-bullseye", platforms: "linux/arm64,linux/amd64"}
+          - {tag: "8.2-cli-bookworm", platforms: "linux/arm64,linux/amd64"}
+          - {tag: "8.2.12-cli-bullseye", platforms: "linux/arm64,linux/amd64"}
           - {tag: "8.2.12-cli-bookworm", platforms: "linux/arm64,linux/amd64"}
 #          - {tag: "8.3-cli-bookworm", platforms: "linux/arm64,linux/amd64"}
           - {tag: "latest", platforms: "linux/arm64,linux/amd64"}
