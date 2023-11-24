@@ -53,8 +53,8 @@ jobs:
           - {tag: "8.1-cli-buster", platforms: "linux/arm64,linux/amd64"}
           - {tag: "8.1.25-cli-buster", platforms: "linux/arm64,linux/amd64"}
           - {tag: "8.2-cli-buster", platforms: "linux/arm64,linux/amd64"}
-          - {tag: "8.2.12-cli-buster", platforms: "linux/arm64,linux/amd64"}
-          - {tag: "8.3-cli-buster", platforms: "linux/arm64,linux/amd64"}
+          - {tag: "8.2.12-cli-bookworm", platforms: "linux/arm64,linux/amd64"}
+#          - {tag: "8.3-cli-bookworm", platforms: "linux/arm64,linux/amd64"}
           - {tag: "latest", platforms: "linux/arm64,linux/amd64"}
 
     steps:
