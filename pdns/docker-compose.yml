@@ -1,0 +1,59 @@
+version: '3.7'
+
+volumes:
+  mysql:
+
+services:
+  mysql:
+    image: lostlink/mysql:8.0
+    environment:
+      - TZ=UTC
+      - MYSQL_ROOT_PASSWORD=my-secret-pw
+    ports:
+      - "${FORWARD_MYSQL_PORT:-3306}:${MYSQL_PORT:-3306}"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - mysql:/var/lib/mysql:z
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      timeout: 10s
+      retries: 5
+
+  pdns:
+    build:
+      context: .
+    hostname: ns1.pdns.test
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      - PDNS_AUTH_webserver_password=secret-webserver-password
+      - PDNS_AUTH_api_key=secret-apikey
+      - PDNS_AUTH_gmysql_one_host=mysql
+      - PDNS_AUTH_gmysql_one_dbname=domainlink_pdns
+      - PDNS_AUTH_gmysql_one_user=root
+      - PDNS_AUTH_gmysql_one_password=my-secret-pw
+      - PIPE_DEFAULT_IPV4=127.0.0.1
+      - PIPE_DEFAULT_IPV6=::1
+      - PIPE_DEFAULT_MX=localhost
+
+      # Set this if you want to have a public resolver
+      - PDNS_REC_local_address=0.0.0.0
+
+      # Logging Setup
+      #- PDNS_AUTH_log_dns_details=yes
+      #- PDNS_AUTH_log_dns_queries=yes
+      #- PDNS_AUTH_log_timestamp=yes
+      #- PDNS_AUTH_query_logging=yes
+      #- PDNS_AUTH_loglevel=9
+      # Define AFXR Access (zone transfers) and the authorized IPs
+      #- PDNS_AUTH_disable_axfr=yes
+      #- PDNS_AUTH_allow_axfr_ips=127.0.0.1/32
+    ports:
+      - "${FORWARD_PDNS_AUTH_TCP_PORT:-53}:${PDNS_AUTH_PORT:-53}/tcp"
+      - "${FORWARD_PDNS_AUTH_UDP_PORT:-53}:${PDNS_AUTH_PORT:-53}/udp"
+      - "${FORWARD_PDNS_AUTH_UI_PORT:-8081}:${PDNS_AUTH_UI_PORT:-8081}"
+      - "${FORWARD_PDNS_REC_TCP_PORT:-5353}:${PDNS_REC_PORT:-5353}/tcp"
+      - "${FORWARD_PDNS_REC_UDP_PORT:-5353}:${PDNS_REC_PORT:-5353}/udp"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
