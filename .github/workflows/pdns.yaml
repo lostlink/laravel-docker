@@ -1,4 +1,4 @@
-name: Build & Push PowerDNS Authoritative
+name: Build & Push PowerDNS Authoritative with Recursor
 
 on:
   push:

@@ -14,12 +14,7 @@ initialStuff() {
     php artisan route:cache;
 }
 
-if [ "$1" != "" ]; then
-    exec "$@"
-else
-
-  initialStuff
-
+startSupervisord() {
   if [ -z "${APP_ENV}" ]; then
       echo "Variable APP_ENV does not exist or is empty!"
       echo "Setting default value to Production"
@@ -36,5 +31,32 @@ else
     export OCTANE_DEV=false;
   fi
 
-  exec /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
+  /usr/bin/supervisord -c /etc/supervisor/supervisord.conf
+}
+
+# Run the initial setup
+initialStuff
+
+# Start Supervisord in the background
+startSupervisord &
+
+# Check if HORIZON_WORKER is set to "true"
+if [ "${HORIZON_WORKER}" == "true" ]; then
+  # Start the loop to monitor the PHP command
+  while true; do
+      result=$(php artisan tinker --execute="\Illuminate\Support\Facades\Queue::size('default');")
+      if [ "$result" -eq 0 ]; then
+          echo "Queue size is 0. Stopping Supervisord programs."
+          supervisorctl stop all
+          break
+      else
+          echo "Queue size is $result. Waiting for it to reach 0..."
+          sleep 5
+      fi
+  done
+else
+  echo "HORIZON_WORKER is not set to 'true'. The queue monitoring loop will not run."
 fi
+
+# Wait for both processes to finish
+wait

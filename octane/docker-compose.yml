@@ -1,0 +1,16 @@
+version: '3.7'
+
+services:
+  octane:
+    build:
+      context: .
+      args:
+        - PACKAGIST_TOKEN=${PACKAGIST_TOKEN}
+        - DOTENV_TOKEN=${DOTENV_TOKEN}
+        - APP_ENV=develop
+    environment:
+      - APP_ENV=develop
+    ports:
+      - "${FORWARD_APP_PORT:-9000}:${OCTANE_APP_PORT-9000}"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
