@@ -44,7 +44,7 @@ startSupervisord &
 if [ "${HORIZON_WORKER}" == "true" ]; then
   # Start the loop to monitor the PHP command
   while true; do
-      result=$(php artisan tinker --execute="\Illuminate\Support\Facades\Queue::size('default');")
+      result=$(su octane -c "php artisan tinker --execute=\"echo \Illuminate\Support\Facades\Queue::size('default');\"")
       if [ "$result" -eq 0 ]; then
           echo "Queue size is 0. Stopping Supervisord programs."
           supervisorctl stop all
