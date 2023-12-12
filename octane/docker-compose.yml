@@ -10,8 +10,6 @@ services:
         - APP_ENV=develop
     environment:
       - APP_ENV=develop
-      - ENABLE_HORIZON=true
-      - ENABLE_SCHEDULER=true
     ports:
       - "${FORWARD_APP_PORT:-9000}:${OCTANE_APP_PORT-9000}"
     volumes:

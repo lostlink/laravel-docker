@@ -48,6 +48,7 @@ if [ "${HORIZON_WORKER}" == "true" ]; then
       if [ "$result" -eq 0 ]; then
           echo "Queue size is 0. Stopping Supervisord programs."
           supervisorctl stop all
+          exit 0
           break
       else
           echo "Queue size is $result. Waiting for it to reach 0..."
