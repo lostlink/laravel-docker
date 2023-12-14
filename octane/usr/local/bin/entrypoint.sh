@@ -6,12 +6,16 @@ php() {
 }
 
 initialStuff() {
-    composer dump -o; \
-    php artisan optimize:clear; \
-    php artisan package:discover --ansi; \
-    php artisan event:cache; \
-    php artisan config:cache; \
-    php artisan route:cache;
+  if [ "${FARGATE,,}" == "true" ]; then
+    echo "Running inside Fargate adjusting DNS Resolver"
+    sed -i.old '1s;^;nameserver 8.8.8.8\nnameserver 1.1.1.1\n;' /etc/resolv.conf
+  fi
+  composer dump -o; \
+  php artisan optimize:clear; \
+  php artisan package:discover --ansi; \
+  php artisan event:cache; \
+  php artisan config:cache; \
+  php artisan route:cache;
 }
 
 startSupervisord() {
