@@ -6,12 +6,6 @@ php() {
 }
 
 initialStuff() {
-  if [ "${FARGATE,,}" == "true" ]; then
-    echo "Running inside Fargate adjusting DNS Resolver"
-    sed -i '1s;^;nameserver 8.8.8.8\nnameserver 1.1.1.1\n;' /etc/resolv.conf
-  else
-    echo "Running outside Fargate"
-  fi
   composer dump -o; \
   php artisan optimize:clear; \
   php artisan package:discover --ansi; \
