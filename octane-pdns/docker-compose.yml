@@ -1,0 +1,39 @@
+version: '3.7'
+
+services:
+  octane:
+    build:
+      context: .
+      args:
+        - PHP_TAG=8.2.12-cli-bookworm
+        - COMPOSER_TAG=latest
+        - NODE_VERSION=lts.x
+        - PDNS_VERSION=4.9
+        - PACKAGIST_TOKEN=${PACKAGIST_TOKEN}
+        - DOTENV_TOKEN=${DOTENV_TOKEN}
+        - APP_ENV=develop
+    environment:
+      - APP_ENV=develop
+    ports:
+      - "${FORWARD_APP_PORT:-9000}:${OCTANE_APP_PORT-9000}"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+
+#  horizon-worker:
+#    build:
+#      context: .
+#      args:
+#        - PHP_TAG=8.2.12-cli-bookworm
+#        - COMPOSER_TAG=latest
+#        - NODE_VERSION=lts.x
+#        - PDNS_VERSION=4.9
+#        - PACKAGIST_TOKEN=${PACKAGIST_TOKEN}
+#        - DOTENV_TOKEN=${DOTENV_TOKEN}
+#        - APP_ENV=develop
+#    environment:
+#      - APP_ENV=develop
+#      - HORIZON_WORKER=true
+#    ports:
+#      - "${FORWARD_APP_PORT:-9000}:${OCTANE_APP_PORT-9000}"
+#    volumes:
+#      - /etc/localtime:/etc/localtime:ro
