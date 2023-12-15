@@ -56,8 +56,8 @@ ENV \
   ENABLE_REC=${ENABLE_REC} \
   REC_VERSION=${PDNS_REC_VERSION} \
   PDNS_REC_daemon=no \
-  PDNS_REC_setuid=recursor \
-  PDNS_REC_setgid=recursor \
+  PDNS_REC_setuid=pdns \
+  PDNS_REC_setgid=pdns \
   PDNS_REC_local_port=5353 \
   PDNS_REC_local_address=127.0.0.1 \
   PDNS_REC_config_dir=/etc/pdns \
