@@ -48,12 +48,8 @@ jobs:
       fail-fast: false
       matrix:
         build:
-          - {tag: "8.2-cli-buster", platforms: "linux/arm64,linux/amd64"}
-          - {tag: "8.2-cli-bullseye", platforms: "linux/arm64,linux/amd64"}
           - {tag: "8.2-cli-bookworm", platforms: "linux/arm64,linux/amd64"}
-          - {tag: "8.2.12-cli-bullseye", platforms: "linux/arm64,linux/amd64"}
           - {tag: "8.2.12-cli-bookworm", platforms: "linux/arm64,linux/amd64"}
-          - {tag: "8.3-cli-bullseye", platforms: "linux/arm64,linux/amd64"}
           - {tag: "8.3-cli-bookworm", platforms: "linux/arm64,linux/amd64"}
           - {tag: "latest", platforms: "linux/arm64,linux/amd64"}
 
@@ -96,7 +92,7 @@ jobs:
             "WWWGROUP=${{ env.WWWGROUP }}"
             "ENABLE_HORIZON=${{ env.ENABLE_HORIZON }}"
             "ENABLE_SCHEDULER=${{ env.ENABLE_SCHEDULER }}"
-            "ENABLE_PDNS=${{ env.ENABLE_SCHEDULER }}"
+            "ENABLE_PDNS=${{ env.ENABLE_PDNS }}"
             "INCLUDE_NPM=${{ env.INCLUDE_NPM }}"
             "INSTALL_OPCACHE=${{ env.INSTALL_OPCACHE }}"
             "INSTALL_PHPREDIS=${{ env.INSTALL_PHPREDIS }}"

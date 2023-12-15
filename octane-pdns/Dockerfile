@@ -74,6 +74,7 @@ ENV \
   PDNS_setgid=pdns \
   PDNS_local_port=53 \
   PDNS_local_address=0.0.0.0 \
+  PDNS_config_dir=/etc/pdns \
   PDNS_include_dir=/etc/pdns/recursor.d
 
 ENV ROOT=/var/www/html
