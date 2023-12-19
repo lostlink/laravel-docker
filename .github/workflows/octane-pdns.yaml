@@ -108,3 +108,4 @@ jobs:
             "INSTALL_PGSQL=${{ env.INSTALL_PGSQL }}"
             "INSTALL_PG_CLIENT=${{ env.INSTALL_PG_CLIENT }}"
             "INSTALL_POSTGIS=${{ env.INSTALL_POSTGIS }}"
+            "INSTALL_EXCIMER=${{ env.INSTALL_EXCIMER }}"

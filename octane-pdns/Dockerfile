@@ -59,6 +59,7 @@ ARG INSTALL_PDO_PGSQL=false
 ARG INSTALL_PGSQL=false
 ARG INSTALL_PG_CLIENT=false
 ARG INSTALL_POSTGIS=false
+ARG INSTALL_EXCIMER=true
 
 ENV DEBIAN_FRONTEND=noninteractive \
     TERM=xterm-color \
@@ -256,6 +257,13 @@ RUN if [ ${INSTALL_PG_CLIENT} = true ]; then \
             apt-get install -yqq --no-install-recommends --show-progress postgis; \
           fi && \
           apt-get purge -yqq gnupg; \
+    fi
+    ###########################################
+    # Excimer
+    ###########################################
+RUN if [ ${INSTALL_EXCIMER} = true ]; then \
+        pecl -q install -o -f excimer && \
+        docker-php-ext-enable excimer; \
     fi
 
 ###########################################
