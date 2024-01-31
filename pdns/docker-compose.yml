@@ -41,11 +41,11 @@ services:
       - PDNS_REC_local_address=0.0.0.0
 
       # Logging Setup
-      #- PDNS_AUTH_log_dns_details=yes
-      #- PDNS_AUTH_log_dns_queries=yes
-      #- PDNS_AUTH_log_timestamp=yes
-      #- PDNS_AUTH_query_logging=yes
-      #- PDNS_AUTH_loglevel=9
+      - PDNS_AUTH_log_dns_details=yes
+      - PDNS_AUTH_log_dns_queries=yes
+      - PDNS_AUTH_log_timestamp=yes
+      - PDNS_AUTH_query_logging=yes
+      - PDNS_AUTH_loglevel=9
       # Define AFXR Access (zone transfers) and the authorized IPs
       #- PDNS_AUTH_disable_axfr=yes
       #- PDNS_AUTH_allow_axfr_ips=127.0.0.1/32

@@ -11,6 +11,7 @@ ARG ENABLE_REC=yes
 LABEL maintainer="Nuno Souto <nsouto@lostlink.net>"
 
 RUN apk add --no-cache \
+    bash \
     mariadb-client \
     pdns~=${PDNS_AUTH_VERSION} \
     pdns-backend-mysql~=${PDNS_AUTH_VERSION} \
