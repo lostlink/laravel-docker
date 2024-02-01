@@ -37,6 +37,8 @@ services:
       - PIPE_DEFAULT_IPV6=::1
       - PIPE_DEFAULT_MX=localhost
 
+      - PDNS_AUTH_cache_ttl=0
+
       # Set this if you want to have a public resolver
       - PDNS_REC_local_address=0.0.0.0
 
