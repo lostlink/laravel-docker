@@ -59,7 +59,7 @@ ENV \
   PDNS_AUTH_webserver_address=0.0.0.0 \
   PDNS_AUTH_webserver_allow_from=0.0.0.0/0,::/0 \
   PDNS_AUTH_pipe_abi_version=2 \
-  PDNS_AUTH_pipe_command=/var/lib/powerdns/bin/powerdns \
+  PDNS_AUTH_pipe_command=/var/lib/powerdns/bin/default.sh \
   PIPE_DEFAULT_IPV4=127.0.0.1 \
   PIPE_DEFAULT_IPV6=::1 \
   PIPE_DEFAULT_MX=localhost \

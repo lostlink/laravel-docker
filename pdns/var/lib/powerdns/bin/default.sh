@@ -11,19 +11,22 @@ while IFS=$'#\t\n' read -r input; do
   # Extract command, qname, and qtype from the input in one awk call
   read -r command qname _ qtype _ <<< $(echo "$input" | awk '{print $1, $2, $3, $4, $5}')
 
-  if [ "$qname" = "." ]; then
-    qname=""
-  fi
-
   # Process the input based on the command
   case "$command" in
     HELO)
       # Respond to the HELO command
-      printf "OK\n"
+      printf "OK\tStarting Bash Backend\n"
       ;;
 
     Q)
       # Handle DNS query types
+#      if [ "$qname" = "." ]; then
+#        printf "END\n"
+#      fi
+#
+#      if [[ "$qname" != *.* ]]; then
+#        printf "END\n"
+#      fi
       case "$qtype" in
         A|ANY)
           printf "DATA\t%s.\tIN\tA\t60\t-1\t%s\n" "$qname" "$default_ipv4"
@@ -33,9 +36,6 @@ while IFS=$'#\t\n' read -r input; do
           ;;&
         NS|ANY)
           printf "DATA\t%s.\tIN\tNS\t60\t-1\t%s\n" "$qname" "$default_ns"
-          ;;&
-        CNAME)
-          printf "FAIL\n"
           ;;&
         MX|ANY)
           printf "DATA\t%s.\tIN\tMX\t60\t-1\t10\t%s\n" "$qname" "$default_mx"
