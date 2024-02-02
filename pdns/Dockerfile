@@ -12,6 +12,14 @@ LABEL maintainer="Nuno Souto <nsouto@lostlink.net>"
 
 RUN apk add --no-cache \
     bash \
+    php82 \
+    php82-phar \
+    php82-intl \
+    php82-json \
+    php82-curl \
+    php82-fileinfo \
+    php82-mbstring \
+    php82-tokenizer \
     mariadb-client \
     pdns~=${PDNS_AUTH_VERSION} \
     pdns-backend-mysql~=${PDNS_AUTH_VERSION} \
@@ -24,6 +32,8 @@ RUN apk add --no-cache \
 	supervisor \
     drill && \
     rm -rf /var/cache/apk/*
+
+RUN ln -s /usr/bin/php82 /usr/bin/php
 
 RUN pip3 install --no-cache-dir envtpl
 
@@ -49,7 +59,7 @@ ENV \
   PDNS_AUTH_webserver_address=0.0.0.0 \
   PDNS_AUTH_webserver_allow_from=0.0.0.0/0,::/0 \
   PDNS_AUTH_pipe_abi_version=2 \
-  PDNS_AUTH_pipe_command=/var/lib/powerdns/bin/default.sh \
+  PDNS_AUTH_pipe_command=/var/lib/powerdns/bin/powerdns \
   PIPE_DEFAULT_IPV4=127.0.0.1 \
   PIPE_DEFAULT_IPV6=::1 \
   PIPE_DEFAULT_MX=localhost \
@@ -65,6 +75,8 @@ ENV \
   PDNS_REC_include_dir=/etc/pdns/recursor.d
 
 COPY --chmod=755 ./var/lib/powerdns/bin/default.sh /var/lib/powerdns/bin/default.sh
+COPY --chmod=755 ./var/lib/powerdns/bin/powerdns /var/lib/powerdns/bin/powerdns
+COPY ./var/lib/powerdns/bin/resources /var/lib/powerdns/bin/resources
 COPY ./etc/pdns/pdns.conf.tpl /
 COPY ./etc/pdns/recursor.d /etc/pdns/recursor.d
 COPY ./etc/pdns/zones /etc/pdns/zones
