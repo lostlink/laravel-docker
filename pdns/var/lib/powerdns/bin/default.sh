@@ -41,7 +41,7 @@ while IFS=$'#\t\n' read -r input; do
           printf "DATA\t%s.\tIN\tMX\t60\t-1\t10\t%s\n" "$qname" "$default_mx"
           ;;&
         SOA|ANY)
-          printf "DATA\t%s.\tIN\tSOA\t60\t-1\t%s.\t%s.\t1\t900\t900\t1080\t60\n" "$qname" "$default_ns" "$default_ns"
+          printf "DATA\t%s.\tIN\tSOA\t60\t-1\t%s.\t%s.\t1\t900\t900\t1080\t60\n" "${qname#*.}" "$default_ns" "$default_ns"
           ;;
       esac
       ;;
