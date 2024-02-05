@@ -49,9 +49,11 @@ while(<>)
 
         if (exists $ENV{"PIPE_DEFAULT_NS"}) {
             my @ns_records = split(',', $ENV{"PIPE_DEFAULT_NS"});
-			print "DATA\t$bits\t$auth\t$qname\t$qclass\tSOA\t3600\t-1\t@ns_records[1]\thostmaster.$domain\t2008080300\t1800\t3600\t604800\t3600\n";
+			print "DATA	$bits	$auth	$qname	$qclass	SOA	3600	-1	@ns_records[1] hostmaster.$domain 2008080300 1800 3600 604800 3600\n";
+#			print "DATA\t$bits\t$auth\t$qname\t$qclass\tSOA\t3600\t-1\t@ns_records[1]\thostmaster.$domain\t2008080300\t1800\t3600\t604800\t3600\n";
         } else {
-			print "DATA\t$bits\t$auth\t$qname\t$qclass\tSOA\t3600\t-1\tns1.localhost\thostmaster.$domain\t2008080300\t1800\t3600\t604800\t3600\n";
+			print "DATA	$bits	$auth	$qname	$qclass	SOA	3600	-1	ns1.localhost hostmaster.$domain 2008080300 1800 3600 604800 3600\n";
+#			print "DATA\t$bits\t$auth\t$qname\t$qclass\tSOA\t3600\t-1\tns1.localhost\thostmaster.$domain\t2008080300\t1800\t3600\t604800\t3600\n";
         }
 	}
 
