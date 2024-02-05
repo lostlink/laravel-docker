@@ -32,7 +32,7 @@ while(<>)
 
 
 	my ($type,$qname,$qclass,$qtype,$id,$ip,$localip,$ednsip)=split(/\t/);
-	my $domain = `/var/lib/powerdns/bin/powerdns domain:root $qname`;
+#	my $domain = `/var/lib/powerdns/bin/powerdns domain:root $qname`;
 	my $bits=21;
 	my $auth = 1;
 
@@ -53,10 +53,10 @@ while(<>)
         if (exists $ENV{"PIPE_DEFAULT_NS"}) {
             my @ns_records = split(',', $ENV{"PIPE_DEFAULT_NS"});
 #			print "DATA	$bits	$auth	$qname	$qclass	SOA	3600	-1	$primary_ns hostmaster.$domain 2008080300 1800 3600 604800 3600\n";
-			print "DATA\t$bits\t$auth\t$qname\t$qclass\tSOA\t3600\t-1\t$primary_ns\thostmaster.$domain\t2008080300\t1800\t3600\t604800\t3600\n";
+			print "DATA\t$bits\t$auth\t$qname\t$qclass\tSOA\t3600\t-1\t$primary_ns\thostmaster.$primary_ns\t2008080300\t1800\t3600\t604800\t3600\n";
         } else {
 #			print "DATA	$bits	$auth	$qname	$qclass	SOA	3600	-1	ns1.localhost hostmaster.$domain 2008080300 1800 3600 604800 3600\n";
-			print "DATA\t$bits\t$auth\t$qname\t$qclass\tSOA\t3600\t-1\tns1.localhost\thostmaster.$domain\t2008080300\t1800\t3600\t604800\t3600\n";
+			print "DATA\t$bits\t$auth\t$qname\t$qclass\tSOA\t3600\t-1\tns1.localhost\thostmaster.$primary_ns\t2008080300\t1800\t3600\t604800\t3600\n";
         }
 	}
 
