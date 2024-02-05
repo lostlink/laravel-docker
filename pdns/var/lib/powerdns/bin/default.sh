@@ -19,31 +19,32 @@ while IFS=$'#\t\n' read -r input; do
       ;;
 
     Q)
+      root_domain=$(/var/lib/powerdns/bin/powerdns domain:root "$qname")
+
       # Handle DNS query types
-#      if [ "$qname" = "." ]; then
-#        printf "END\n"
-#      fi
-#
-#      if [[ "$qname" != *.* ]]; then
-#        printf "END\n"
-#      fi
-      case "$qtype" in
-        A|ANY)
-          printf "DATA\t%s.\tIN\tA\t60\t-1\t%s\n" "$qname" "$default_ipv4"
-          ;;&
-        AAAA|ANY)
-          printf "DATA\t%s.\tIN\tAAAA\t60\t-1\t%s\n" "$qname" "$default_ipv6"
-          ;;&
-        NS|ANY)
-          printf "DATA\t%s.\tIN\tNS\t60\t-1\t%s\n" "$qname" "$default_ns"
-          ;;&
-        MX|ANY)
-          printf "DATA\t%s.\tIN\tMX\t60\t-1\t10\t%s\n" "$qname" "$default_mx"
-          ;;&
-        SOA|ANY)
-          printf "DATA\t%s.\tIN\tSOA\t60\t-1\t%s.\t%s.\t1\t900\t900\t1080\t60\n" "${qname#*.}" "$default_ns" "$default_ns"
-          ;;
-      esac
+      if [ "$qname" = "." ]; then
+        printf ""
+      elif [ "$root_domain" == '' ]; then
+        printf ""
+      else
+        case "$qtype" in
+          A|ANY)
+            printf "DATA\t%s.\tIN\tA\t60\t-1\t%s\n" "$qname" "$default_ipv4"
+            ;;&
+          AAAA|ANY)
+            printf "DATA\t%s.\tIN\tAAAA\t60\t-1\t%s\n" "$qname" "$default_ipv6"
+            ;;&
+          NS|ANY)
+            printf "DATA\t%s.\tIN\tNS\t60\t-1\t%s\n" "$qname" "$default_ns"
+            ;;&
+          MX|ANY)
+            printf "DATA\t%s.\tIN\tMX\t60\t-1\t10\t%s\n" "$qname" "$default_mx"
+            ;;&
+          SOA|ANY)
+            printf "DATA\t%s.\tIN\tSOA\t60\t-1\t%s.\thostmaster.%s.\t1\t900\t900\t1080\t60\n" "$root_domain" "$default_ns" "$root_domain"
+            ;;
+        esac
+      fi
       ;;
 
     *)
