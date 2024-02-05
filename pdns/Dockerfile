@@ -1,7 +1,7 @@
-ARG PDNS_AUTH_VERSION=4.7
-ARG PDNS_REC_VERSION=4.8
+ARG PDNS_AUTH_VERSION=4.8
+ARG PDNS_REC_VERSION=4.9
 
-FROM alpine:3.18.4
+FROM alpine:3.19.1
 
 ARG PDNS_AUTH_VERSION
 ARG ENABLE_AUTH=yes
@@ -27,15 +27,15 @@ RUN apk add --no-cache \
     pdns-backend-remote~=${PDNS_AUTH_VERSION} \
     pdns-recursor~="${PDNS_REC_VERSION}" \
     pdns-doc \
-    py3-pip \
     python3 \
+    py3-pip \
 	supervisor \
     drill && \
     rm -rf /var/cache/apk/*
 
-RUN ln -s /usr/bin/php82 /usr/bin/php
-
-RUN pip3 install --no-cache-dir envtpl
+RUN python3 -m venv /root/venv; \
+    . /root/venv/bin/activate; \
+    pip3 install --no-cache-dir envtpl
 
 ENV \
   TZ=UTC \

@@ -85,6 +85,7 @@ if [ "${PDNS_AUTH_superslave:-no}" = "yes" ]; then
 fi
 
 # Create config file from template
+. /root/venv/bin/activate
 envtpl < /pdns.conf.tpl > /etc/pdns/pdns.conf
 envtpl < /recursor.conf.tpl > /etc/pdns/recursor.conf
 
