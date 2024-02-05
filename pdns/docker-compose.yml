@@ -35,7 +35,7 @@ services:
       - PDNS_AUTH_gmysql_one_password=my-secret-pw
       - PIPE_DEFAULT_IPV4=127.0.0.1
       - PIPE_DEFAULT_IPV6=::1
-      - PIPE_DEFAULT_MX=localhost
+      - PIPE_DEFAULT_MX=10 localhost
 
       - PDNS_AUTH_cache_ttl=0
 

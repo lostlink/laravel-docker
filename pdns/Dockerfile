@@ -12,6 +12,7 @@ LABEL maintainer="Nuno Souto <nsouto@lostlink.net>"
 
 RUN apk add --no-cache \
     bash \
+    coreutils \
     php82 \
     php82-phar \
     php82-intl \
@@ -58,8 +59,8 @@ ENV \
   PDNS_AUTH_webserver=yes \
   PDNS_AUTH_webserver_address=0.0.0.0 \
   PDNS_AUTH_webserver_allow_from=0.0.0.0/0,::/0 \
-  PDNS_AUTH_pipe_abi_version=2 \
-  PDNS_AUTH_pipe_command=/var/lib/powerdns/bin/default.sh \
+  PDNS_AUTH_pipe_abi_version=3 \
+  PDNS_AUTH_pipe_command=/var/lib/powerdns/bin/default.pl \
   PIPE_DEFAULT_IPV4=127.0.0.1 \
   PIPE_DEFAULT_IPV6=::1 \
   PIPE_DEFAULT_MX=localhost \
@@ -75,6 +76,7 @@ ENV \
   PDNS_REC_include_dir=/etc/pdns/recursor.d
 
 COPY --chmod=755 ./var/lib/powerdns/bin/default.sh /var/lib/powerdns/bin/default.sh
+COPY --chmod=755 ./var/lib/powerdns/bin/default.pl /var/lib/powerdns/bin/default.pl
 COPY --chmod=755 ./var/lib/powerdns/bin/powerdns /var/lib/powerdns/bin/powerdns
 COPY ./var/lib/powerdns/bin/resources /var/lib/powerdns/bin/resources
 COPY ./etc/pdns/pdns.conf.tpl /
