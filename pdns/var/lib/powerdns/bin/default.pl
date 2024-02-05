@@ -36,11 +36,11 @@ while(<>)
 	my $bits=21;
 	my $auth = 1;
 
-	if (!defined($domain) || $domain eq '') {
-		print STDERR "$$ Domain is null or empty, skipping record processing\n";
-		print "END\n";
-		next;
-	}
+#	if (!defined($domain) || $domain eq '') {
+#		print STDERR "$$ Domain is null or empty, skipping record processing\n";
+#		print "END\n";
+#		next;
+#	}
 
     my $primary_ns;
     if (exists $ENV{"PIPE_DEFAULT_NS"}) {
