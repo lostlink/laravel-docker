@@ -1,10 +1,9 @@
 #!/usr/bin/perl -w
-# sample PowerDNS Coprocess backend with edns-client-subnet support
-#
+# PowerDNS Coprocess Backend
 
 use strict;
 
-$|=1;					# no buffering
+$|=1; # no buffering
 
 my $line=<>;
 chomp($line);
@@ -15,7 +14,7 @@ unless($line eq "HELO\t3" ) {
 	<>;
 	exit;
 }
-print "OK\tPerl backend firing up\n";	# print our banner
+print "OK\tPerl backend firing up\n";
 
 while(<>)
 {
@@ -28,8 +27,7 @@ while(<>)
 		next;
 	}
 
-	# Need the root domain for the SOA record and to ignore TLD's and . queries
-
+	# TODO: Need the root domain for the SOA record and to ignore TLD's and . queries
 
 	my ($type,$qname,$qclass,$qtype,$id,$ip,$localip,$ednsip)=split(/\t/);
 #	my $domain = `/var/lib/powerdns/bin/powerdns domain:root $qname`;
@@ -52,11 +50,9 @@ while(<>)
 
         if (exists $ENV{"PIPE_DEFAULT_NS"}) {
             my @ns_records = split(',', $ENV{"PIPE_DEFAULT_NS"});
-#			print "DATA	$bits	$auth	$qname	$qclass	SOA	3600	-1	$primary_ns hostmaster.$domain 2008080300 1800 3600 604800 3600\n";
 			print "DATA\t$bits\t$auth\t$qname\t$qclass\tSOA\t3600\t-1\t$primary_ns\thostmaster.$primary_ns\t2008080300\t1800\t3600\t604800\t3600\n";
         } else {
-#			print "DATA	$bits	$auth	$qname	$qclass	SOA	3600	-1	ns1.localhost hostmaster.$domain 2008080300 1800 3600 604800 3600\n";
-			print "DATA\t$bits\t$auth\t$qname\t$qclass\tSOA\t3600\t-1\tns1.localhost\thostmaster.$primary_ns\t2008080300\t1800\t3600\t604800\t3600\n";
+			print "DATA\t$bits\t$auth\t$qname\t$qclass\tSOA\t3600\t-1\tns1.pdns.local\thostmaster.$primary_ns\t2008080300\t1800\t3600\t604800\t3600\n";
         }
 	}
 
@@ -69,14 +65,22 @@ while(<>)
                 print "DATA\t$bits\t$auth\t$qname\t$qclass\tNS\t3600\t-1\t$ns\n";
             }
         } else {
-        	print "DATA\t$bits\t$auth\t$qname\t$qclass\tNS\t3600\t-1\tns1.domain.link\n";
-			print "DATA\t$bits\t$auth\t$qname\t$qclass\tNS\t3600\t-1\tns2.domain.link\n";
+        	print "DATA\t$bits\t$auth\t$qname\t$qclass\tNS\t3600\t-1\tns1.pdns.local\n";
+			print "DATA\t$bits\t$auth\t$qname\t$qclass\tNS\t3600\t-1\tns2.pdns.local\n";
         }
 	}
 
 	if(($qtype eq "TXT" || $qtype eq "ANY")) {
-		print STDERR "$$ Sent TXT records\n";
-		print "DATA\t$bits\t$auth\t$qname\t$qclass\tTXT\t3600\t-1\t\"Managed domain please visit https://domain.link!\"\n";
+        print STDERR "$$ Sent TXT record\n";
+
+        my $txt_content = $ENV{"PIPE_DEFAULT_TXT"} // "Managed domain!";
+
+        # Ensure the TXT record content is enclosed in double quotes
+        $txt_content = "\"$txt_content\"" unless $txt_content =~ /^".*"$/;
+
+        print "DATA\t$bits\t$auth\t$qname\t$qclass\tTXT\t3600\t-1\t$txt_content\n";
+
+#		print "DATA\t$bits\t$auth\t$qname\t$qclass\tTXT\t3600\t-1\t\"Managed domain please visit https://domain.link!\"\n";
 	}
 
 	if(($qtype eq "A" || $qtype eq "ANY")) {

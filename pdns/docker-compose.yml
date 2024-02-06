@@ -36,6 +36,7 @@ services:
       - PIPE_DEFAULT_IPV4=127.0.0.1
       - PIPE_DEFAULT_IPV6=::1
       - PIPE_DEFAULT_MX=10 localhost
+      - PIPE_DEFAULT_TXT=Managed Domain, please visit https://pdns.local
 
       - PDNS_AUTH_cache_ttl=0
 
