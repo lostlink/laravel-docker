@@ -48,10 +48,10 @@ jobs:
       fail-fast: false
       matrix:
         build:
-          - {tag: "2", builder_tag: "2-builder", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
-          - {tag: "2.7", builder_tag: "2.7-builder", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
-          - {tag: "2.7.5", builder_tag: "2.7.5-builder", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
-          - {tag: "latest", builder_tag: "builder", platforms: "linux/arm/v7,linux/arm64,linux/amd64"}
+          - {tag: "2", builder_tag: "2-builder", platforms: "linux/arm64,linux/amd64"}
+          - {tag: "2.7", builder_tag: "2.7-builder", platforms: "linux/arm64,linux/amd64"}
+          - {tag: "2.7.6", builder_tag: "2.7.6-builder", platforms: "linux/arm64,linux/amd64"}
+          - {tag: "latest", builder_tag: "builder", platforms: "linux/arm64,linux/amd64"}
 
     steps:
       - name: Check out code

@@ -4,7 +4,7 @@ ARG CADDY_BUILDER_TAG=builder
 FROM caddy:${CADDY_BUILDER_TAG} AS builder
 
 RUN xcaddy build \
-    --with github.com/silinternational/certmagic-storage-dynamodb/v3 \
+#    --with github.com/silinternational/certmagic-storage-dynamodb/v3 \
     --with github.com/zhangjiayin/caddy-mysql-storage \
     --with github.com/caddy-dns/powerdns
 
