@@ -13,7 +13,6 @@ RUN xcaddy build \
 #  https://www.docker.com/blog/dockerfiles-now-support-multiple-build-contexts/
 #  https://github.com/docker/build-push-action#path-context
 
-
 FROM caddy:${CADDY_TAG}
 
 LABEL maintainer="Nuno Souto <nsouto@lostlink.net>"
