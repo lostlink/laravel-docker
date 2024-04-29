@@ -1,6 +1,6 @@
 ARG PDNS_VERSION=4.7
 
-FROM alpine:3.18.4
+FROM alpine:3.18.6
 
 ARG PDNS_VERSION
 
@@ -13,6 +13,7 @@ RUN apk add --no-cache \
     pdns-backend-pipe~=${PDNS_VERSION} \
     pdns-backend-remote~=${PDNS_VERSION} \
     pdns-doc \
+    jq \
     py3-pip \
     python3
 
