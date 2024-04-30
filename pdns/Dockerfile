@@ -55,12 +55,9 @@ ENV \
   PDNS_AUTH_max_queue_length=50000 \
   PDNS_AUTH_zone_cache_refresh-interval=0 \
   PDNS_AUTH_api=yes \
-  PDNS_AUTH_launch=gmysql:one,pipe \
   PDNS_AUTH_webserver=yes \
   PDNS_AUTH_webserver_address=0.0.0.0 \
   PDNS_AUTH_webserver_allow_from=0.0.0.0/0,::/0 \
-  PDNS_AUTH_pipe_abi_version=3 \
-  PDNS_AUTH_pipe_command=/var/lib/powerdns/bin/default.pl \
   PIPE_DEFAULT_IPV4=127.0.0.1 \
   PIPE_DEFAULT_IPV6=::1 \
   PIPE_DEFAULT_MX=localhost \
@@ -71,7 +68,7 @@ ENV \
   PDNS_REC_setuid=pdns \
   PDNS_REC_setgid=pdns \
   PDNS_REC_local_port=5353 \
-  PDNS_REC_local_address=127.0.0.1 \
+  PDNS_REC_local_address=0.0.0.0 \
   PDNS_REC_config_dir=/etc/pdns \
   PDNS_REC_include_dir=/etc/pdns/recursor.d
 
@@ -91,6 +88,8 @@ RUN chmod +x /usr/local/bin/entrypoint.sh; \
 
 RUN rm  -rf /tmp/* /var/cache/apk/*
 
+HEALTHCHECK --interval=10s --timeout=10s --retries=3 --start-period=2s CMD ["pdns_control", "ping"]
+
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
 
-EXPOSE 53 53/udp
+EXPOSE 53 53/udp 5353 5353/udp 8081

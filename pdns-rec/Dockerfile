@@ -10,16 +10,16 @@ RUN apk add --no-cache \
     pdns-recursor~="${PDNS_VERSION}" \
     py3-pip \
     python3 \
-    drill && \
-    rm -rf /var/cache/apk/*
+    bind-tools \
+    drill
 
 RUN pip3 install --no-cache-dir envtpl
 
 ENV \
   VERSION=${PDNS_VERSION} \
   PDNS_daemon=no \
-  PDNS_setuid=recursor \
-  PDNS_setgid=recursor \
+  PDNS_setuid=pdns \
+  PDNS_setgid=pdns \
   PDNS_local_port=53 \
   PDNS_local_address=0.0.0.0 \
   PDNS_config_dir=/etc/pdns \
@@ -33,6 +33,8 @@ COPY ./docker-entrypoint.sh /
 #HEALTHCHECK --interval=5s --timeout=3s CMD \
 #    drill health.localhost.tld @localhost | grep -q 'rcode: NXDOMAIN' && \
 #    drill localhost @localhost | grep -q 'rcode: NOERROR'
+
+RUN rm  -rf /tmp/* /var/cache/apk/*
 
 ENTRYPOINT [ "/docker-entrypoint.sh" ]
 
