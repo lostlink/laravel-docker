@@ -18,8 +18,8 @@ RUN pip3 install --no-cache-dir envtpl
 ENV \
   VERSION=${PDNS_VERSION} \
   PDNS_daemon=no \
-  PDNS_setuid=pdns \
-  PDNS_setgid=pdns \
+  PDNS_setuid=recursor \
+  PDNS_setgid=recursor \
   PDNS_local_port=53 \
   PDNS_local_address=0.0.0.0 \
   PDNS_config_dir=/etc/pdns \
