@@ -5,7 +5,7 @@ FROM caddy:${CADDY_BUILDER_TAG} AS builder
 
 RUN xcaddy build \
 #    --with github.com/silinternational/certmagic-storage-dynamodb/v3 \
-    --with build --with github.com/yroc92/postgres-storage \
+    --with github.com/yroc92/postgres-storage \
     --with github.com/zhangjiayin/caddy-mysql-storage \
     --with github.com/caddy-dns/powerdns
 
