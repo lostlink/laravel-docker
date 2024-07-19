@@ -76,6 +76,7 @@ RUN apt-get update; \
     pecl -q channel-update pecl.php.net; \
     apt-get install -yqq --no-install-recommends --show-progress \
             apt-utils \
+            dnsutils \
             gnupg \
             gosu \
             git \

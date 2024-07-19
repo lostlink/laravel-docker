@@ -96,6 +96,7 @@ RUN apt-get update; \
     pecl -q channel-update pecl.php.net; \
     apt-get install -yqq --no-install-recommends --show-progress \
             apt-utils \
+            dnsutils \
             gnupg \
             gosu \
             git \
@@ -123,9 +124,9 @@ RUN apt-get update; \
             libxml2 \
             libzstd1 \
             procps \
-    		pdns-recursor \
-        	python3 \
-    		pipx
+    		    pdns-recursor \
+        	  python3 \
+    		    pipx
 
     ###########################################
     # envtpl for PDNS Setup
