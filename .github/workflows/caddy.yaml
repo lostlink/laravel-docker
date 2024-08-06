@@ -49,8 +49,8 @@ jobs:
       matrix:
         build:
           - {tag: "2", builder_tag: "2-builder", platforms: "linux/arm64,linux/amd64"}
-          - {tag: "2.7", builder_tag: "2.7-builder", platforms: "linux/arm64,linux/amd64"}
-          - {tag: "2.7.6", builder_tag: "2.7.6-builder", platforms: "linux/arm64,linux/amd64"}
+          - {tag: "2.8", builder_tag: "2.8-builder", platforms: "linux/arm64,linux/amd64"}
+          - {tag: "2.8.4", builder_tag: "2.8.4-builder", platforms: "linux/arm64,linux/amd64"}
           - {tag: "latest", builder_tag: "builder", platforms: "linux/arm64,linux/amd64"}
 
     steps:
