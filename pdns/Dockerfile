@@ -30,7 +30,7 @@ RUN apk add --no-cache \
     pdns-doc \
     python3 \
     py3-pip \
-	supervisor \
+	  supervisor \
     drill && \
     rm -rf /var/cache/apk/*
 
