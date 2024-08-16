@@ -2,7 +2,7 @@
 
 # Configuration from environment variables
 KINESIS_STREAM_NAME="${KINESIS_STREAM_NAME:-}"
-AWS_REGION="${AWS_REGION:-}"
+KINESIS_REGION="${KINESIS_REGION:-}"
 WEBHOOK_URL="${WEBHOOK_URL:-}"
 FORWARD_EMAIL="${FORWARD_EMAIL:-}"
 LOG_FILE="${LOG_FILE:-/var/log/email_pipe.log}"
@@ -55,7 +55,7 @@ send_to_kinesis() {
         --stream-name "$KINESIS_STREAM_NAME" \
         --data "$email_content" \
         --partition-key "$from" \
-        --region "$AWS_REGION"
+        --region "$KINESIS_REGION"
 
     if [ $? -eq 0 ]; then
         echo "Email successfully sent to Kinesis stream." >> "$LOG_FILE"
