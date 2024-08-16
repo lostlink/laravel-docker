@@ -62,7 +62,7 @@ RUN apt-get install -yqq --no-install-recommends --no-install-suggests \
 
 RUN python3 -m venv /root/venv; \
     . /root/venv/bin/activate; \
-    pip3 install --no-cache-dir envtpl aws-cli
+    pip3 install --no-cache-dir envtpl awscli
 
 RUN apt-get --quiet --quiet clean all \
     && rm --recursive --force /var/lib/apt/lists/* /tmp/* /var/tmp/*
