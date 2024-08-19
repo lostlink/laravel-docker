@@ -78,6 +78,7 @@ COPY ./etc/supervisor/ /etc/supervisor/
 
 COPY --chmod=0755 ./usr/local/bin/entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY --chmod=0755 ./usr/local/bin/mailparse.sh /usr/local/bin/mailparse.sh
+COPY ./usr/local/bin/mailparse.eml /usr/local/bin/mailparse.eml
 
 HEALTHCHECK --interval=10s --timeout=10s --retries=3 --start-period=2s CMD ["postfix", "status"]
 

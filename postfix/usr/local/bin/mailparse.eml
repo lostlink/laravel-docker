@@ -1,0 +1,14 @@
+From root@88b12215087f  Mon Aug 19 17:09:13 2024
+Return-Path: <root@88b12215087f>
+X-Original-To: unknown@mydomain.com
+Delivered-To: catchall@localhost
+Received: by localhost (Postfix, from userid 0)
+        id 0CF5670671C; Mon, 19 Aug 2024 17:09:13 +0000 (UTC)
+Subject: Test email
+To: <unknown@mydomain.com>
+User-Agent: mail (GNU Mailutils 3.15)
+Date: Mon, 19 Aug 2024 17:09:13 +0000
+Message-Id: <20240819170913.0CF5670671C@localhost>
+From: root <root@88b12215087f>
+
+test email

@@ -1,0 +1,20 @@
+services:
+  postfix:
+    build:
+      context: .
+      args:
+        - POSTFIX_TAG=${POSTFIX_TAG}
+        - DEBIAN_TAG=${DEBIAN_TAG}
+        - PHP_VERSION=${PHP_VERSION}
+    environment:
+      - KINESIS_STREAM_NAME=${KINESIS_STREAM_NAME}
+      - KINESIS_REGION=${KINESIS_REGION}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - WEBHOOK_URL=${WEBHOOK_URL}
+      - FORWARD_EMAIL=${FORWARD_EMAIL}
+    ports:
+      - "${FORWARD_POSTFIX_PORT:-25}:${POSTFIX_PORT:-25}"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
