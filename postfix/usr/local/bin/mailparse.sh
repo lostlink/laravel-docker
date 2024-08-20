@@ -37,9 +37,26 @@ send_to_kinesis() {
         return 1
     fi
 
+    # Construct JSON payload
+    email_json=$(jq -n \
+        --arg from "$from" \
+        --arg to "$(grep -i "^To:" <<< "$email_content" | sed 's/To: //')" \
+        --arg subject "$subject" \
+        --arg date "$(grep -i "^Date:" <<< "$email_content" | sed 's/Date: //')" \
+        --arg reply_to "$(grep -i "^Reply-To:" <<< "$email_content" | sed 's/Reply-To: //')" \
+        --arg raw_email "$email_content" \
+        '{
+            "from": $from,
+            "to": $to,
+            "subject": $subject,
+            "date": $date,
+            "reply_to": $reply_to,
+            "data": $raw_email
+        }')
+
     aws kinesis put-record \
         --stream-name "$KINESIS_STREAM_NAME" \
-        --data "$email_content" \
+        --data "$email_json" \
         --partition-key "$from" \
         --region "$KINESIS_REGION"
 

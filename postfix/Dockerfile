@@ -30,6 +30,7 @@ RUN apt-get update; \
     apt-get install -yqq --no-install-recommends --no-install-suggests \
             apt-utils \
             dnsutils \
+            jq \
             php${PHP_VERSION} \
             php${PHP_VERSION}-cli \
             php${PHP_VERSION}-mailparse \
