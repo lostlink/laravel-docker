@@ -5,6 +5,7 @@ KINESIS_STREAM_NAME="${KINESIS_STREAM_NAME:-}"
 KINESIS_REGION="${KINESIS_REGION:-}"
 WEBHOOK_URL="${WEBHOOK_URL:-}"
 FORWARD_EMAIL="${FORWARD_EMAIL:-}"
+DOMAIN_FILTER="${DOMAIN_FILTER:-msg.domaineasy.com}"
 
 # Log the incoming email for debugging purposes
 echo "Email received at $(date)" >> /proc/1/fd/1
@@ -18,9 +19,19 @@ cat > "$TEMP_EMAIL_FILE"
 # Extract relevant information from the email
 subject=$(grep -i "^Subject:" "$TEMP_EMAIL_FILE" | sed 's/Subject: //')
 from=$(grep -i "^From:" "$TEMP_EMAIL_FILE" | sed 's/From: //')
+to=$(grep -i "^To:" <<< "$email_content" | sed 's/To: //')
 
 # Log the extracted information (optional)
-echo "Received an email from: $from with subject: $subject" >> /proc/1/fd/1
+echo "Received an email from: $from to $to with subject: $subject" >> /proc/1/fd/1
+
+# Check if the 'To' field matches the specified domain, if DOMAIN_FILTER is set
+if [ -n "$DOMAIN_FILTER" ]; then
+    if ! grep -iq "^To:.*@$DOMAIN_FILTER" "$TEMP_EMAIL_FILE"; then
+        echo "Email does not match the 'To' domain '$DOMAIN_FILTER'. Ignoring." >> /proc/1/fd/1
+        rm -f "$TEMP_EMAIL_FILE"
+        exit 0
+    fi
+fi
 
 # Read the entire email content
 email_content=$(cat "$TEMP_EMAIL_FILE")
