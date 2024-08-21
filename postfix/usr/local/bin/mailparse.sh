@@ -1,5 +1,9 @@
 #!/bin/bash
 
+exec 2>>/var/log/email_pipe_error.log
+
+env > /tmp/mailparse_env.log
+
 # Configuration from environment variables
 KINESIS_STREAM_NAME="${KINESIS_STREAM_NAME:-}"
 KINESIS_REGION="${KINESIS_REGION:-}"
