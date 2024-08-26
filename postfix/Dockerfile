@@ -53,6 +53,7 @@ RUN apt-get update; \
             procmail \
             sasl2-bin \
             python3 \
+            python3-full \
             python3-pip \
             python3-venv \
             supervisor \
@@ -61,8 +62,8 @@ RUN apt-get update; \
 RUN apt-get install -yqq --no-install-recommends --no-install-suggests \
             opendmarc
 
-RUN python3 -m venv /root/venv; \
-    . /root/venv/bin/activate; \
+RUN python3 -m venv /usr/local/bin/venv; \
+    . /usr/local/bin/venv/bin/activate; \
     pip3 install --no-cache-dir envtpl awscli
 
 RUN apt-get --quiet --quiet clean all \

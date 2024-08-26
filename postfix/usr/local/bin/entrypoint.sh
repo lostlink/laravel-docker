@@ -20,7 +20,7 @@ EOF
 chmod +r /usr/local/bin/.mailparse.env
 
 echo "Create config file from template"
-. /root/venv/bin/activate
+. /usr/local/bin/venv/bin/activate
 envtpl < /etc/pdns/recursor.conf.tpl > /etc/pdns/recursor.conf
 
 echo "Create PowerDNS directories"

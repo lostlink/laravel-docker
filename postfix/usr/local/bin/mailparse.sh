@@ -48,7 +48,7 @@ rm -f "$TEMP_EMAIL_FILE"
 
 # Function to send email to Kinesis
 send_to_kinesis() {
-    . /root/venv/bin/activate;
+    . /usr/local/bin/venv/bin/activate;
 
     if ! command -v aws &> /dev/null; then
         echo "AWS CLI not found. Cannot send email to Kinesis."
