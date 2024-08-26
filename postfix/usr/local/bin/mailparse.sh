@@ -6,8 +6,8 @@ if [ -f /usr/local/bin/.mailparse.env ]; then
 fi
 
 # Redirect stdout and stderr to Docker logs
-exec > >(tee -a /proc/1/fd/1)
-exec 2> >(tee -a /proc/1/fd/2)
+#exec > >(tee -a /proc/1/fd/1)
+#exec 2> >(tee -a /proc/1/fd/2)
 
 # Configuration from environment variables
 KINESIS_STREAM_NAME="${KINESIS_STREAM_NAME:-}"
