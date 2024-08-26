@@ -1,8 +1,10 @@
 #!/bin/bash
 
-exec 2>>/var/log/email_pipe_error.log
+if [ -f /usr/local/bin/.mailparse.env ]; then
+    . /usr/local/bin/.mailparse.env
+fi
 
-env > /tmp/mailparse_env.log
+exec 2>>/var/log/email_pipe_error.log
 
 # Configuration from environment variables
 KINESIS_STREAM_NAME="${KINESIS_STREAM_NAME:-}"

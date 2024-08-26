@@ -4,6 +4,21 @@
 set -e
 #set -x
 
+# Write environment variables to /usr/local/bin/.mailparse.env
+echo "Writing environment variables to /usr/local/bin/.mailparse.env"
+cat <<EOF > /usr/local/bin/.mailparse.env
+export KINESIS_STREAM_NAME="${KINESIS_STREAM_NAME:-}"
+export KINESIS_REGION="${KINESIS_REGION:-}"
+export WEBHOOK_URL="${WEBHOOK_URL:-}"
+export FORWARD_EMAIL="${FORWARD_EMAIL:-}"
+export DOMAIN_FILTER="${DOMAIN_FILTER:-msg.domaineasy.com}"
+export LOG_FILE="${LOG_FILE:-/var/log/email_pipe.log}"
+export LOG_MAX_SIZE="${LOG_MAX_SIZE:-1048576}"
+EOF
+
+# Ensure the .mailparse.env file is readable
+chmod +r /usr/local/bin/.mailparse.env
+
 echo "Create config file from template"
 . /root/venv/bin/activate
 envtpl < /etc/pdns/recursor.conf.tpl > /etc/pdns/recursor.conf
