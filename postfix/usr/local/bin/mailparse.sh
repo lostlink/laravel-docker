@@ -1,10 +1,13 @@
 #!/bin/bash
 
+# Load environment variables if .mailparse.env exists
 if [ -f /usr/local/bin/.mailparse.env ]; then
     . /usr/local/bin/.mailparse.env
 fi
 
-exec 2>>/var/log/email_pipe_error.log
+# Redirect stdout and stderr to Docker logs
+exec > >(tee -a /proc/1/fd/1)
+exec 2> >(tee -a /proc/1/fd/2)
 
 # Configuration from environment variables
 KINESIS_STREAM_NAME="${KINESIS_STREAM_NAME:-}"
@@ -12,31 +15,9 @@ KINESIS_REGION="${KINESIS_REGION:-}"
 WEBHOOK_URL="${WEBHOOK_URL:-}"
 FORWARD_EMAIL="${FORWARD_EMAIL:-}"
 DOMAIN_FILTER="${DOMAIN_FILTER:-msg.domaineasy.com}"
-LOG_FILE="${LOG_FILE:-/var/log/email_pipe.log}"
-LOG_MAX_SIZE=${LOG_MAX_SIZE:-1048576}  # 1MB
-LOG_ROTATION_COUNT=${LOG_ROTATION_COUNT:-4}
-
-# Function to rotate log if it exceeds the maximum size
-rotate_log() {
-    if [ -f "$LOG_FILE" ]; then
-        log_size=$(stat --format="%s" "$LOG_FILE")
-        if [ "$log_size" -ge "$LOG_MAX_SIZE" ]; then
-            for i in $(seq $LOG_ROTATION_COUNT -1 1); do
-                if [ -f "$LOG_FILE.$i" ]; then
-                    mv "$LOG_FILE.$i" "$LOG_FILE.$((i+1))"
-                fi
-            done
-            mv "$LOG_FILE" "$LOG_FILE.1"
-            echo "Log rotated at $(date)" > "$LOG_FILE"
-        fi
-    fi
-}
-
-# Rotate the log file if necessary
-rotate_log
 
 # Log the incoming email for debugging purposes
-echo "Email received at $(date)" >> "$LOG_FILE"
+echo "Email received at $(date)"
 
 # Save the email content to a temporary file
 TEMP_EMAIL_FILE=$(mktemp /tmp/email_XXXXXX.eml)
@@ -49,12 +30,12 @@ subject=$(grep -i "^Subject:" "$TEMP_EMAIL_FILE" | sed 's/Subject: //')
 from=$(grep -i "^From:" "$TEMP_EMAIL_FILE" | sed 's/From: //')
 to=$(grep -i "^To:" <<< "$email_content" | sed 's/To: //')
 
-# Log the extracted information (optional)
-echo "Received an email from: $from to $to with subject: $subject" >> "$LOG_FILE"
+# Log the extracted information
+echo "Received an email from: $from to $to with subject: $subject"
 
 # Check if the 'To' field matches the specified domain
 if [ -n "$DOMAIN_FILTER" ] && ! grep -iq "^To:.*@$DOMAIN_FILTER" "$TEMP_EMAIL_FILE"; then
-    echo "Email does not match the 'To' domain '$DOMAIN_FILTER'. Ignoring." >> "$LOG_FILE"
+    echo "Email does not match the 'To' domain '$DOMAIN_FILTER'. Ignoring."
     rm -f "$TEMP_EMAIL_FILE"
     exit 0
 fi
@@ -70,7 +51,7 @@ send_to_kinesis() {
     . /root/venv/bin/activate;
 
     if ! command -v aws &> /dev/null; then
-        echo "AWS CLI not found. Cannot send email to Kinesis." >> "$LOG_FILE"
+        echo "AWS CLI not found. Cannot send email to Kinesis."
         return 1
     fi
 
@@ -98,10 +79,10 @@ send_to_kinesis() {
         --region "$KINESIS_REGION"
 
     if [ $? -eq 0 ]; then
-        echo "Email successfully sent to Kinesis stream." >> "$LOG_FILE"
+        echo "Email successfully sent to Kinesis stream."
         return 0
     else
-        echo "Failed to send email to Kinesis stream." >> "$LOG_FILE"
+        echo "Failed to send email to Kinesis stream."
         return 1
     fi
 }
@@ -109,7 +90,7 @@ send_to_kinesis() {
 # Function to send email to a webhook
 send_to_webhook() {
     if ! command -v curl &> /dev/null; then
-        echo "cURL not found. Cannot send email to webhook." >> "$LOG_FILE"
+        echo "cURL not found. Cannot send email to webhook."
         return 1
     fi
 
@@ -118,10 +99,10 @@ send_to_webhook() {
         --data-binary "$email_content"
 
     if [ $? -eq 0 ]; then
-        echo "Email successfully sent to webhook." >> "$LOG_FILE"
+        echo "Email successfully sent to webhook."
         return 0
     else
-        echo "Failed to send email to webhook." >> "$LOG_FILE"
+        echo "Failed to send email to webhook."
         return 1
     fi
 }
@@ -129,17 +110,17 @@ send_to_webhook() {
 # Function to forward email to another address
 forward_email() {
     if ! command -v sendmail &> /dev/null; then
-        echo "Sendmail not found. Cannot forward email." >> "$LOG_FILE"
+        echo "Sendmail not found. Cannot forward email."
         return 1
     fi
 
     echo "$email_content" | sendmail -t "$FORWARD_EMAIL"
 
     if [ $? -eq 0 ]; then
-        echo "Email successfully forwarded to $FORWARD_EMAIL." >> "$LOG_FILE"
+        echo "Email successfully forwarded to $FORWARD_EMAIL."
         return 0
     else
-        echo "Failed to forward email to $FORWARD_EMAIL." >> "$LOG_FILE"
+        echo "Failed to forward email to $FORWARD_EMAIL."
         return 1
     fi
 }
@@ -165,7 +146,7 @@ fi
 
 # Log if no actions were performed
 if [ "$result" -eq 0 ] && [ -z "$KINESIS_STREAM_NAME" ] && [ -z "$WEBHOOK_URL" ] && [ -z "$FORWARD_EMAIL" ]; then
-    echo "No valid configuration found. Email content logged and discarded." >> "$LOG_FILE"
+    echo "No valid configuration found. Email content logged and discarded."
 fi
 
 # Exit with the result status
