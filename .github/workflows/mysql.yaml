@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           lfs: true
 
@@ -50,7 +50,9 @@ jobs:
         build:
           - {tag: "5.7", platforms: "linux/amd64"}
           - {tag: "8.0", platforms: "linux/arm64,linux/amd64"}
-          - {tag: "8.0.35", platforms: "linux/arm64,linux/amd64"}
+          - {tag: "8.0.39", platforms: "linux/arm64,linux/amd64"}
+          - {tag: "9.0", platforms: "linux/arm64,linux/amd64"}
+          - {tag: "9.0.1", platforms: "linux/arm64,linux/amd64"}
           - {tag: "latest", platforms: "linux/arm64,linux/amd64"}
 
     steps:
