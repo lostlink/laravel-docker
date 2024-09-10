@@ -49,11 +49,11 @@ jobs:
       matrix:
         build:
           - {tag: "5.7", platforms: "linux/amd64"}
-          - {tag: "8.0", platforms: "linux/arm64,linux/amd64"}
-          - {tag: "8.0.39", platforms: "linux/arm64,linux/amd64"}
-          - {tag: "9.0", platforms: "linux/arm64,linux/amd64"}
-          - {tag: "9.0.1", platforms: "linux/arm64,linux/amd64"}
-          - {tag: "latest", platforms: "linux/arm64,linux/amd64"}
+          - {tag: "8.0", platforms: "linux/arm64,linux/arm64/v8,linux/amd64"}
+          - {tag: "8.0.39", platforms: "linux/arm64,linux/arm64/v8,linux/amd64"}
+          - {tag: "9.0", platforms: "linux/arm64,linux/arm64/v8,linux/amd64"}
+          - {tag: "9.0.1", platforms: "linux/arm64,linux/arm64/v8,linux/amd64"}
+          - {tag: "latest", platforms: "linux/arm64,linux/arm64/v8,linux/amd64"}
 
     steps:
       - name: Check out code
