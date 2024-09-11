@@ -15,6 +15,7 @@ KINESIS_REGION="${KINESIS_REGION:-}"
 WEBHOOK_URL="${WEBHOOK_URL:-}"
 FORWARD_EMAIL="${FORWARD_EMAIL:-}"
 DOMAIN_FILTER="${DOMAIN_FILTER:-msg.domaineasy.com}"
+REMOVE_TEMP_EMAIL="${REMOVE_TEMP_EMAIL:-true}"
 
 # Log the incoming email for debugging purposes
 echo "Email received at $(date)"
@@ -36,15 +37,21 @@ echo "Received an email from: $from to $to with subject: $subject"
 # Check if the 'To' field matches the specified domain
 if [ -n "$DOMAIN_FILTER" ] && ! grep -iq "^To:.*@$DOMAIN_FILTER" "$TEMP_EMAIL_FILE"; then
     echo "Email does not match the 'To' domain '$DOMAIN_FILTER'. Ignoring."
-    rm -f "$TEMP_EMAIL_FILE"
+
+    # Conditionally remove the temp email file based on the REMOVE_TEMP_EMAIL variable
+    if [ "$REMOVE_TEMP_EMAIL" = "true" ]; then
+        rm -f "$TEMP_EMAIL_FILE"
+    fi
     exit 0
 fi
 
 # Read the entire email content
 email_content=$(cat "$TEMP_EMAIL_FILE")
 
-# Cleanup: remove the temporary email file as soon as possible
-rm -f "$TEMP_EMAIL_FILE"
+# Cleanup: Conditionally remove the temporary email file
+if [ "$REMOVE_TEMP_EMAIL" = "true" ]; then
+    rm -f "$TEMP_EMAIL_FILE"
+fi
 
 # Function to send email to Kinesis
 send_to_kinesis() {
