@@ -1,11 +1,10 @@
-{
-	on_demand_tls {
-		ask {$CADDY_ORIGIN_DOMAIN_CHECK_URL}
-	}
+auto_https off
+on_demand_tls {
+	ask {$CADDY_ORIGIN_DOMAIN_CHECK_URL}
+}
 
-	storage dynamodb {$CADDY_DYNAMODB_TABLE_NAME} {
-		aws_region {$CADDY_DYNAMODB_AWS_REGION}
-	}
+storage file_system {
+	root {$CADDY_CERTS_PATH:/etc/caddy/certs}
 }
 
 :80 {
@@ -15,7 +14,6 @@
 :443 {
 	tls {$CADDY_LETS_ENCRYPT_EMAIL} {
 		on_demand
-		dns powerdns {$CADDY_POWERDNS_SERVER_URL} {$CADDY_POWERDNS_API_TOKEN}
 	}
 
 	reverse_proxy {$CADDY_ORIGIN_URL}
