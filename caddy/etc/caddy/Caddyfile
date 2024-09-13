@@ -1,4 +1,5 @@
 auto_https off
+
 on_demand_tls {
 	ask {$CADDY_ORIGIN_DOMAIN_CHECK_URL}
 }
