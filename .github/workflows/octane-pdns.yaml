@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           lfs: true
 
@@ -55,7 +55,7 @@ jobs:
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           lfs: true
 
@@ -66,19 +66,19 @@ jobs:
           expand: "true"
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
       - name: Login to Docker Hub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - name: Build and push
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v6
         with:
           context: "{{defaultContext}}:${{ env.APP_NAME }}"
           platforms: ${{ matrix.build.platforms }}
@@ -92,6 +92,7 @@ jobs:
             "WWWGROUP=${{ env.WWWGROUP }}"
             "ENABLE_HORIZON=${{ env.ENABLE_HORIZON }}"
             "ENABLE_SCHEDULER=${{ env.ENABLE_SCHEDULER }}"
+            "ENABLE_VECTOR=${{ env.ENABLE_VECTOR }}"
             "ENABLE_PDNS=${{ env.ENABLE_PDNS }}"
             "INCLUDE_NPM=${{ env.INCLUDE_NPM }}"
             "INSTALL_OPCACHE=${{ env.INSTALL_OPCACHE }}"

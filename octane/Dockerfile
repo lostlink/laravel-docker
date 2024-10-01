@@ -22,6 +22,9 @@ RUN composer require laravel/octane && \
 
 RUN sed -i 's/LOG_CHANNEL=stack/LOG_CHANNEL=stderr/g' .env
 
+RUN touch database/database.sqlite && \
+    php artisan migrate --force
+
 ###########################################
 # Octane
 ###########################################
@@ -34,6 +37,7 @@ ARG WWWGROUP=1000
 ARG TIMEZONE=UTC
 ARG ENABLE_HORIZON=false
 ARG ENABLE_SCHEDULER=false
+ARG ENABLE_VECTOR=false
 ARG TARGETARCH
 ARG NODE_VERSION
 ARG INCLUDE_NPM=true
@@ -61,6 +65,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     TERM=xterm-color \
     ENABLE_HORIZON=${ENABLE_HORIZON} \
     ENABLE_SCHEDULER=${ENABLE_SCHEDULER} \
+    ENABLE_VECTOR=${ENABLE_VECTOR} \
     COMPOSER_ALLOW_SUPERUSER=1
 
 ENV ROOT=/var/www/html
@@ -256,6 +261,20 @@ RUN wget -q "https://github.com/aptible/supercronic/releases/download/v0.2.1/sup
     echo "*/1 * * * * php ${ROOT}/artisan schedule:run --verbose --no-interaction" > /etc/supercronic/laravel;
 ###########################################
 
+###########################################
+# Install Vector using .deb package
+###########################################
+RUN curl -LO https://packages.timber.io/vector/0.41.1/vector_0.41.1-1_${TARGETARCH}.deb \
+    && dpkg -i vector_0.41.1-1_${TARGETARCH}.deb \
+    && rm vector_0.41.1-1_${TARGETARCH}.deb
+
+# Create the Vector configuration directory
+RUN mkdir -p /etc/vector
+
+# Copy the Vector configuration file
+COPY ./etc/vector/vector.toml /etc/vector/vector.toml
+###########################################
+
 RUN groupadd --force -g $WWWGROUP octane && \
     useradd -ms /bin/bash --no-log-init --no-user-group -g $WWWGROUP -u $WWWUSER octane
 
@@ -279,6 +298,8 @@ RUN apt-get clean && \
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
     rm /var/log/lastlog /var/log/faillog
 
-EXPOSE 9000
+RUN chown -R octane:octane /var/www/html
+
+EXPOSE 9000 9001 9002
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
