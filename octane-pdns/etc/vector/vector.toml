@@ -19,6 +19,8 @@
   source = '''
   .kinesis_stream_name = .kinesis_stream_name
   .aws_region = .aws_region
+  .aws_access_key_id = .aws_access_key_id
+  .aws_secret_access_key = .aws_secret_access_key
   . = parse_json!(.message)
   '''
 
@@ -28,6 +30,8 @@
   inputs = ["parse_json"]
   stream_name = "{{kinesis_stream_name}}"
   region = "{{aws_region}}"
+  auth.access_key_id = "{{aws_access_key_id}}"
+  auth.secret_access_key = "{{aws_secret_access_key}}"
   encoding.codec = "json"
 
   # Optional: Configure batching to optimize network usage

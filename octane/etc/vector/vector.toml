@@ -1,40 +1,44 @@
 # TCP source for incoming JSON data
 [sources.socket_tcp]
-  type = "socket"
-  address = "0.0.0.0:9001"
-  mode = "tcp"
-  max_length = 1024000
+type = "socket"
+address = "0.0.0.0:9001"
+mode = "tcp"
+max_length = 1024000
 
 # UDP source for incoming JSON data
 [sources.socket_udp]
-  type = "socket"
-  address = "0.0.0.0:9002"
-  mode = "udp"
-  max_length = 1024000
+type = "socket"
+address = "0.0.0.0:9002"
+mode = "udp"
+max_length = 1024000
 
 # Transform: Parse incoming JSON and isolate the message field
 [transforms.parse_json]
-  type = "remap"
-  inputs = ["socket_tcp", "socket_udp"]
-  source = '''
+type = "remap"
+inputs = ["socket_tcp", "socket_udp"]
+source = '''
   .kinesis_stream_name = .kinesis_stream_name
   .aws_region = .aws_region
+  .aws_access_key_id = .aws_access_key_id
+  .aws_secret_access_key = .aws_secret_access_key
   . = parse_json!(.message)
   '''
 
 # Kinesis sink with dynamically set stream name and region
 [sinks.kinesis_dynamic]
-  type = "aws_kinesis_streams"
-  inputs = ["parse_json"]
-  stream_name = "{{kinesis_stream_name}}"
-  region = "{{aws_region}}"
-  encoding.codec = "json"
+type = "aws_kinesis_streams"
+inputs = ["parse_json"]
+stream_name = "{{kinesis_stream_name}}"
+region = "{{aws_region}}"
+auth.access_key_id = "{{aws_access_key_id}}"
+auth.secret_access_key = "{{aws_secret_access_key}}"
+encoding.codec = "json"
 
-  # Optional: Configure batching to optimize network usage
-  batch.max_bytes = 1024000
-  batch.timeout_secs = 1
+# Optional: Configure batching to optimize network usage
+batch.max_bytes = 1024000
+batch.timeout_secs = 1
 
-  # Retry settings
-  request.in_flight_limit = 5
-  request.retry_attempts = 10
-  request.timeout_secs = 30
+# Retry settings
+request.in_flight_limit = 5
+request.retry_attempts = 10
+request.timeout_secs = 30
