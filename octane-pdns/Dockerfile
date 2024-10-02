@@ -1,4 +1,4 @@
-ARG PHP_TAG=8.2.12-cli-bookworm
+ARG PHP_TAG=8.3.12-cli-bookworm
 ARG COMPOSER_TAG=latest
 ARG NODE_VERSION=lts.x
 ARG PDNS_VERSION=4.9
@@ -19,7 +19,7 @@ RUN composer create-project \
     laravel/laravel .
 
 RUN composer require laravel/octane && \
-    php artisan octane:install --server=swoole
+    php artisan octane:install --server=swoole --no-interaction
 
 RUN sed -i 's/LOG_CHANNEL=stack/LOG_CHANNEL=stderr/g' .env
 
@@ -36,6 +36,7 @@ LABEL maintainer="Nuno Souto <nsouto@lostlink.net>"
 ARG WWWUSER=1000
 ARG WWWGROUP=1000
 ARG TIMEZONE=UTC
+ARG OCTANE_SERVER="swoole"
 ARG ENABLE_HORIZON=false
 ARG ENABLE_SCHEDULER=false
 ARG ENABLE_VECTOR=false
@@ -54,36 +55,37 @@ ARG INSTALL_PCNTL=true
 ARG INSTALL_BCMATH=true
 ARG INSTALL_EXIF=true
 ARG INSTALL_RDKAFKA=false
-ARG INSTALL_SWOOLE=true
-ARG SWOOLE_SERVER=openswoole
 ARG INSTALL_INTL=true
 ARG INSTALL_MEMCACHED=false
 ARG INSTALL_MYSQL_CLIENT=true
-ARG INSTALL_PDO_PGSQL=false
-ARG INSTALL_PGSQL=false
-ARG INSTALL_PG_CLIENT=false
-ARG INSTALL_POSTGIS=false
+ARG INSTALL_PDO_PGSQL=true
+ARG INSTALL_PGSQL=true
+ARG INSTALL_PG_CLIENT=true
+ARG INSTALL_POSTGIS=true
 ARG INSTALL_EXCIMER=true
+ARG INSTALL_SWOOLE=true
+ARG SWOOLE_SERVER=openswoole
+ARG INSTALL_ROADRUNNER=true
+ARG INSTALL_FRANKENPHP=true
 
 ENV DEBIAN_FRONTEND=noninteractive \
     TERM=xterm-color \
+    OCTANE_SERVER=${OCTANE_SERVER} \
     ENABLE_HORIZON=${ENABLE_HORIZON} \
     ENABLE_SCHEDULER=${ENABLE_SCHEDULER} \
     ENABLE_VECTOR=${ENABLE_VECTOR} \
     ENABLE_PDNS=${ENABLE_PDNS} \
-    COMPOSER_ALLOW_SUPERUSER=1
+    COMPOSER_ALLOW_SUPERUSER=1 \
+    VERSION=${PDNS_VERSION} \
+    PDNS_daemon=no \
+    PDNS_setuid=pdns \
+    PDNS_setgid=pdns \
+    PDNS_local_port=53 \
+    PDNS_local_address=0.0.0.0 \
+    PDNS_config_dir=/etc/pdns \
+    PDNS_include_dir=/etc/pdns/recursor.d \
+    ROOT=/var/www/html
 
-ENV \
-  VERSION=${PDNS_VERSION} \
-  PDNS_daemon=no \
-  PDNS_setuid=pdns \
-  PDNS_setgid=pdns \
-  PDNS_local_port=53 \
-  PDNS_local_address=0.0.0.0 \
-  PDNS_config_dir=/etc/pdns \
-  PDNS_include_dir=/etc/pdns/recursor.d
-
-ENV ROOT=/var/www/html
 WORKDIR $ROOT
 
 SHELL ["/bin/bash", "-eou", "pipefail", "-c"]
@@ -107,6 +109,7 @@ RUN apt-get update; \
             git \
             curl \
             wget \
+            jq \
             libcurl4-openssl-dev \
             ca-certificates \
             supervisor \
@@ -163,12 +166,14 @@ RUN docker-php-ext-configure gd \
         --with-webp \
         --with-freetype \
     && docker-php-ext-install gd
+
     ###########################################
     # OPcache
     ###########################################
 RUN if [ ${INSTALL_OPCACHE} = true ]; then \
         docker-php-ext-install opcache; \
     fi
+
     ###########################################
     # PHP Redis
     ###########################################
@@ -177,24 +182,28 @@ RUN if [ ${INSTALL_PHPREDIS} = true ]; then \
         rm -rf /tmp/pear && \
         docker-php-ext-enable redis; \
     fi
+
     ###########################################
     # PCNTL
     ###########################################
 RUN if [ ${INSTALL_PCNTL} = true ]; then \
         docker-php-ext-install pcntl; \
     fi
+
     ###########################################
     # BCMath
     ###########################################
 RUN if [ ${INSTALL_BCMATH} = true ]; then \
         docker-php-ext-install bcmath; \
     fi
+
     ###########################################
     # Exif
     ###########################################
 RUN if [ ${INSTALL_EXIF} = true ]; then \
         docker-php-ext-install exif; \
     fi
+
     ###########################################
     # RDKAFKA
     ###########################################
@@ -203,6 +212,7 @@ RUN if [ ${INSTALL_RDKAFKA} = true ]; then \
         pecl -q install -o -f rdkafka && \
         docker-php-ext-enable rdkafka; \
     fi
+
     ###########################################
     # OpenSwoole/Swoole extension
     ###########################################
@@ -211,11 +221,46 @@ RUN if [ ${INSTALL_SWOOLE} = true ]; then \
         pecl -q install -o -f -D 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-mysqlnd="yes" enable-cares="yes"' ${SWOOLE_SERVER} && \
         docker-php-ext-enable ${SWOOLE_SERVER}; \
     fi
+
     ###########################################
-    # RoadRunner Binary
+    # Install RoadRunner Binary
     ###########################################
-    # TODO: Install RoadRunner Binary insted of swoole
-    # when requested
+RUN if [ "${INSTALL_ROADRUNNER}" = "true" ]; then \
+        LATEST_VERSION=$(curl -s https://api.github.com/repos/roadrunner-server/roadrunner/releases/latest | jq -r .tag_name) && \
+        if [ -z "$LATEST_VERSION" ]; then \
+            echo "Failed to fetch the latest RoadRunner version"; \
+            exit 1; \
+        fi && \
+        CLEAN_VERSION=${LATEST_VERSION#v} && \
+        if [ "${TARGETARCH}" = "x86_64" ]; then \
+            ROADRUNNER_ARCH="amd64"; \
+        else \
+            ROADRUNNER_ARCH="${TARGETARCH}"; \
+        fi && \
+        curl -LO https://github.com/roadrunner-server/roadrunner/releases/download/${LATEST_VERSION}/roadrunner-${CLEAN_VERSION}-linux-${ROADRUNNER_ARCH}.deb && \
+        dpkg -i roadrunner-${CLEAN_VERSION}-linux-${ROADRUNNER_ARCH}.deb && \
+        rm roadrunner-${CLEAN_VERSION}-linux-${ROADRUNNER_ARCH}.deb; \
+    fi
+
+    ###########################################
+    # Install FrankenPHP
+    ###########################################
+RUN if [ "${INSTALL_FRANKENPHP}" = "true" ]; then \
+        LATEST_VERSION=$(curl -s https://api.github.com/repos/dunglas/frankenphp/releases/latest | jq -r .tag_name) && \
+        if [ -z "$LATEST_VERSION" ]; then \
+            echo "Failed to fetch the latest FrankenPHP version"; \
+            exit 1; \
+        fi && \
+        if [ "${TARGETARCH}" = "arm64" ]; then \
+            FRANKENPHP_ARCH="aarch64"; \
+        else \
+            FRANKENPHP_ARCH="${TARGETARCH}"; \
+        fi && \
+        curl -LO https://github.com/dunglas/frankenphp/releases/download/${LATEST_VERSION}/frankenphp-linux-${FRANKENPHP_ARCH} && \
+        chmod +x frankenphp-linux-${FRANKENPHP_ARCH} && \
+        mv frankenphp-linux-${FRANKENPHP_ARCH} /usr/local/bin/frankenphp; \
+    fi
+
     ###########################################################################
     # Human Language and Character Encoding Support
     ###########################################################################
@@ -224,6 +269,7 @@ RUN if [ ${INSTALL_INTL} = true ]; then \
         docker-php-ext-configure intl && \
         docker-php-ext-install intl; \
     fi
+
     ###########################################
     # Memcached
     ###########################################
@@ -231,24 +277,28 @@ RUN if [ ${INSTALL_MEMCACHED} = true ]; then \
         pecl -q install -o -f memcached && \
         docker-php-ext-enable memcached; \
     fi
+
     ###########################################
     # MySQL Client
     ###########################################
 RUN if [ ${INSTALL_MYSQL_CLIENT} = true ]; then \
         apt-get install -yqq --no-install-recommends --show-progress default-mysql-client; \
     fi
+
     ###########################################
     # pdo_pgsql
     ###########################################
 RUN if [ ${INSTALL_PDO_PGSQL} = true ]; then \
         docker-php-ext-install pdo_pgsql; \
     fi
+
     ###########################################
     # pgsql
     ###########################################
 RUN if [ ${INSTALL_PGSQL} = true ]; then \
         docker-php-ext-install pgsql; \
     fi
+
     ###########################################
     # pgsql client and postgis
     ###########################################
@@ -264,6 +314,7 @@ RUN if [ ${INSTALL_PG_CLIENT} = true ]; then \
           fi && \
           apt-get purge -yqq gnupg; \
     fi
+
     ###########################################
     # Excimer
     ###########################################
@@ -338,6 +389,6 @@ RUN apt-get clean && \
 
 RUN chown -R octane:octane /var/www/html
 
-EXPOSE 9000 9001 9002 53 53/udp
+EXPOSE 9000 9001 9002/udp 53 53/udp
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
