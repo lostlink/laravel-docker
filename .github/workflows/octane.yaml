@@ -55,6 +55,10 @@ jobs:
           - {tag: "8.2.12-cli-bookworm", platforms: "linux/arm64,linux/amd64"}
           - {tag: "8.3-cli-bullseye", platforms: "linux/arm64,linux/amd64"}
           - {tag: "8.3-cli-bookworm", platforms: "linux/arm64,linux/amd64"}
+          - {tag: "8.3.12-cli-bullseye", platforms: "linux/arm64,linux/amd64"}
+          - {tag: "8.3.12-cli-bookworm", platforms: "linux/arm64,linux/amd64"}
+          - {tag: "8.4.0RC1-cli-bullseye", platforms: "linux/arm64,linux/amd64"}
+          - {tag: "8.4.0RC1-cli-bookworm", platforms: "linux/arm64,linux/amd64"}
           - {tag: "latest", platforms: "linux/arm64,linux/amd64"}
 
     steps:
