@@ -17,18 +17,10 @@ address = "0.0.0.0:9002"
 mode = "udp"
 max_length = 1024000
 
-# Transform: Parse incoming JSON
-[transforms.parse_json]
-type = "remap"
-inputs = ["socket_tcp", "socket_udp"]
-source = '''
-  . = parse_json!(.)
-  '''
-
 # Kinesis sink with dynamically set stream name and region
 [sinks.kinesis_dynamic]
 type = "aws_kinesis_streams"
-inputs = ["parse_json"]
+inputs = ["socket_tcp", "socket_udp"]
 stream_name = "${VECTOR_AWS_KINESIS_STREAM_NAME}"
 region = "${VECTOR_AWS_KINESIS_REGION}"
 auth.access_key_id = "${VECTOR_AWS_KINESIS_ACCESS_KEY_ID}"
