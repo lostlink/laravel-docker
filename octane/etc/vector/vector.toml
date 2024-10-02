@@ -1,3 +1,8 @@
+# API Support
+[api]
+enabled = true
+address = "0.0.0.0:8686"
+
 # TCP source for incoming JSON data
 [sources.socket_tcp]
 type = "socket"
@@ -12,26 +17,22 @@ address = "0.0.0.0:9002"
 mode = "udp"
 max_length = 1024000
 
-# Transform: Parse incoming JSON and isolate the message field
+# Transform: Parse incoming JSON
 [transforms.parse_json]
 type = "remap"
 inputs = ["socket_tcp", "socket_udp"]
 source = '''
-  .kinesis_stream_name = .kinesis_stream_name
-  .aws_region = .aws_region
-  .aws_access_key_id = .aws_access_key_id
-  .aws_secret_access_key = .aws_secret_access_key
-  . = parse_json!(.message)
+  . = parse_json!(.)
   '''
 
 # Kinesis sink with dynamically set stream name and region
 [sinks.kinesis_dynamic]
 type = "aws_kinesis_streams"
 inputs = ["parse_json"]
-stream_name = "{{kinesis_stream_name}}"
-region = "{{aws_region}}"
-auth.access_key_id = "{{aws_access_key_id}}"
-auth.secret_access_key = "{{aws_secret_access_key}}"
+stream_name = "${VECTOR_AWS_KINESIS_STREAM_NAME}"
+region = "${VECTOR_AWS_KINESIS_REGION}"
+auth.access_key_id = "${VECTOR_AWS_KINESIS_ACCESS_KEY_ID}"
+auth.secret_access_key = "${VECTOR_AWS_KINESIS_SECRET_ACCESS_KEY}"
 encoding.codec = "json"
 
 # Optional: Configure batching to optimize network usage
