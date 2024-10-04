@@ -110,6 +110,7 @@ RUN apt-get update; \
             curl \
             wget \
             jq \
+            gettext \
             libcurl4-openssl-dev \
             ca-certificates \
             supervisor \
@@ -213,54 +214,6 @@ RUN if [ ${INSTALL_RDKAFKA} = true ]; then \
         docker-php-ext-enable rdkafka; \
     fi
 
-    ###########################################
-    # OpenSwoole/Swoole extension
-    ###########################################
-RUN if [ ${INSTALL_SWOOLE} = true ]; then \
-        apt-get install -yqq --no-install-recommends --show-progress libc-ares-dev && \
-        pecl -q install -o -f -D 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-mysqlnd="yes" enable-cares="yes"' ${SWOOLE_SERVER} && \
-        docker-php-ext-enable ${SWOOLE_SERVER}; \
-    fi
-
-    ###########################################
-    # Install RoadRunner Binary
-    ###########################################
-RUN if [ "${INSTALL_ROADRUNNER}" = "true" ]; then \
-        LATEST_VERSION=$(curl -s https://api.github.com/repos/roadrunner-server/roadrunner/releases/latest | jq -r .tag_name) && \
-        if [ -z "$LATEST_VERSION" ]; then \
-            echo "Failed to fetch the latest RoadRunner version"; \
-            exit 1; \
-        fi && \
-        CLEAN_VERSION=${LATEST_VERSION#v} && \
-        if [ "${TARGETARCH}" = "x86_64" ]; then \
-            ROADRUNNER_ARCH="amd64"; \
-        else \
-            ROADRUNNER_ARCH="${TARGETARCH}"; \
-        fi && \
-        curl -LO https://github.com/roadrunner-server/roadrunner/releases/download/${LATEST_VERSION}/roadrunner-${CLEAN_VERSION}-linux-${ROADRUNNER_ARCH}.deb && \
-        dpkg -i roadrunner-${CLEAN_VERSION}-linux-${ROADRUNNER_ARCH}.deb && \
-        rm roadrunner-${CLEAN_VERSION}-linux-${ROADRUNNER_ARCH}.deb; \
-    fi
-
-    ###########################################
-    # Install FrankenPHP
-    ###########################################
-RUN if [ "${INSTALL_FRANKENPHP}" = "true" ]; then \
-        LATEST_VERSION=$(curl -s https://api.github.com/repos/dunglas/frankenphp/releases/latest | jq -r .tag_name) && \
-        if [ -z "$LATEST_VERSION" ]; then \
-            echo "Failed to fetch the latest FrankenPHP version"; \
-            exit 1; \
-        fi && \
-        if [ "${TARGETARCH}" = "arm64" ]; then \
-            FRANKENPHP_ARCH="aarch64"; \
-        else \
-            FRANKENPHP_ARCH="${TARGETARCH}"; \
-        fi && \
-        curl -LO https://github.com/dunglas/frankenphp/releases/download/${LATEST_VERSION}/frankenphp-linux-${FRANKENPHP_ARCH} && \
-        chmod +x frankenphp-linux-${FRANKENPHP_ARCH} && \
-        mv frankenphp-linux-${FRANKENPHP_ARCH} /usr/local/bin/frankenphp; \
-    fi
-
     ###########################################################################
     # Human Language and Character Encoding Support
     ###########################################################################
@@ -323,6 +276,56 @@ RUN if [ ${INSTALL_EXCIMER} = true ]; then \
         docker-php-ext-enable excimer; \
     fi
 
+    ###########################################
+    # OpenSwoole/Swoole extension
+    ###########################################
+RUN if [ ${INSTALL_SWOOLE} = true ]; then \
+        apt-get install -yqq --no-install-recommends --show-progress libc-ares-dev && \
+        pecl -q install -o -f -D 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-mysqlnd="yes" enable-cares="yes"' ${SWOOLE_SERVER} && \
+        docker-php-ext-enable ${SWOOLE_SERVER}; \
+    fi
+
+    ###########################################
+    # Install RoadRunner Binary
+    ###########################################
+RUN if [ "${INSTALL_ROADRUNNER}" = "true" ]; then \
+        LATEST_VERSION=$(curl -s https://api.github.com/repos/roadrunner-server/roadrunner/releases/latest | jq -r .tag_name) && \
+        if [ -z "$LATEST_VERSION" ]; then \
+            echo "Failed to fetch the latest RoadRunner version"; \
+            exit 1; \
+        fi && \
+        CLEAN_VERSION=${LATEST_VERSION#v} && \
+        if [ "${TARGETARCH}" = "x86_64" ]; then \
+            ROADRUNNER_ARCH="amd64"; \
+        else \
+            ROADRUNNER_ARCH="${TARGETARCH}"; \
+        fi && \
+        curl -LO https://github.com/roadrunner-server/roadrunner/releases/download/${LATEST_VERSION}/roadrunner-${CLEAN_VERSION}-linux-${ROADRUNNER_ARCH}.deb && \
+        dpkg -i roadrunner-${CLEAN_VERSION}-linux-${ROADRUNNER_ARCH}.deb && \
+        rm roadrunner-${CLEAN_VERSION}-linux-${ROADRUNNER_ARCH}.deb; \
+    fi
+
+    ###########################################
+    # Install FrankenPHP
+    ###########################################
+RUN if [ "${INSTALL_FRANKENPHP}" = "true" ]; then \
+        LATEST_VERSION=$(curl -s https://api.github.com/repos/dunglas/frankenphp/releases/latest | jq -r .tag_name) && \
+        if [ -z "$LATEST_VERSION" ]; then \
+            echo "Failed to fetch the latest FrankenPHP version"; \
+            exit 1; \
+        fi && \
+        if [ "${TARGETARCH}" = "arm64" ]; then \
+            FRANKENPHP_ARCH="aarch64"; \
+        else \
+            FRANKENPHP_ARCH="${TARGETARCH}"; \
+        fi && \
+        curl -LO https://github.com/dunglas/frankenphp/releases/download/${LATEST_VERSION}/frankenphp-linux-${FRANKENPHP_ARCH} && \
+        chmod +x frankenphp-linux-${FRANKENPHP_ARCH} && \
+        mv frankenphp-linux-${FRANKENPHP_ARCH} /usr/local/bin/frankenphp && \
+        mkdir -p /root/.config/caddy && \
+        chown -R ${WWWUSER}:${WWWGROUP} /root/.config/caddy; \
+    fi
+
 ###########################################
 # Include composer
 ###########################################
@@ -350,19 +353,15 @@ RUN wget -q "https://github.com/aptible/supercronic/releases/download/v0.2.1/sup
 ###########################################
 # Install Vector using .deb package
 ###########################################
-RUN curl -LO https://packages.timber.io/vector/0.41.1/vector_0.41.1-1_${TARGETARCH}.deb \
-    && dpkg -i vector_0.41.1-1_${TARGETARCH}.deb \
-    && rm vector_0.41.1-1_${TARGETARCH}.deb
-
-# Create the Vector configuration directory
-RUN mkdir -p /etc/vector
-
-# Copy the Vector configuration file
+RUN curl -LO https://packages.timber.io/vector/0.41.1/vector_0.41.1-1_${TARGETARCH}.deb && \
+    dpkg -i vector_0.41.1-1_${TARGETARCH}.deb && \
+    rm vector_0.41.1-1_${TARGETARCH}.deb && \
+    mkdir -p /etc/vector
 COPY ./etc/vector/vector.toml /etc/vector/vector.toml
 ###########################################
 
-RUN groupadd --force -g $WWWGROUP octane && \
-    useradd -ms /bin/bash --no-log-init --no-user-group -g $WWWGROUP -u $WWWUSER octane
+RUN groupadd --force -g ${WWWGROUP} octane && \
+    useradd -ms /bin/bash --no-log-init --no-user-group -g ${WWWGROUP} -u ${WWWUSER} octane
 
 COPY ./usr/local/bin/entrypoint.sh /usr/local/bin/entrypoint.sh
 COPY ./utilities.sh /root/.docker/utilities.sh

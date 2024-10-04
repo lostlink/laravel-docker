@@ -93,6 +93,7 @@ RUN apt-get update; \
             curl \
             wget \
             jq \
+            gettext \
             libcurl4-openssl-dev \
             ca-certificates \
             supervisor \
@@ -188,54 +189,6 @@ RUN if [ ${INSTALL_RDKAFKA} = true ]; then \
         docker-php-ext-enable rdkafka; \
     fi
 
-    ###########################################
-    # OpenSwoole/Swoole extension
-    ###########################################
-RUN if [ ${INSTALL_SWOOLE} = true ]; then \
-        apt-get install -yqq --no-install-recommends --show-progress libc-ares-dev && \
-        pecl -q install -o -f -D 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-mysqlnd="yes" enable-cares="yes"' ${SWOOLE_SERVER} && \
-        docker-php-ext-enable ${SWOOLE_SERVER}; \
-    fi
-
-    ###########################################
-    # Install RoadRunner Binary
-    ###########################################
-RUN if [ "${INSTALL_ROADRUNNER}" = "true" ]; then \
-        LATEST_VERSION=$(curl -s https://api.github.com/repos/roadrunner-server/roadrunner/releases/latest | jq -r .tag_name) && \
-        if [ -z "$LATEST_VERSION" ]; then \
-            echo "Failed to fetch the latest RoadRunner version"; \
-            exit 1; \
-        fi && \
-        CLEAN_VERSION=${LATEST_VERSION#v} && \
-        if [ "${TARGETARCH}" = "x86_64" ]; then \
-            ROADRUNNER_ARCH="amd64"; \
-        else \
-            ROADRUNNER_ARCH="${TARGETARCH}"; \
-        fi && \
-        curl -LO https://github.com/roadrunner-server/roadrunner/releases/download/${LATEST_VERSION}/roadrunner-${CLEAN_VERSION}-linux-${ROADRUNNER_ARCH}.deb && \
-        dpkg -i roadrunner-${CLEAN_VERSION}-linux-${ROADRUNNER_ARCH}.deb && \
-        rm roadrunner-${CLEAN_VERSION}-linux-${ROADRUNNER_ARCH}.deb; \
-    fi
-
-    ###########################################
-    # Install FrankenPHP
-    ###########################################
-RUN if [ "${INSTALL_FRANKENPHP}" = "true" ]; then \
-        LATEST_VERSION=$(curl -s https://api.github.com/repos/dunglas/frankenphp/releases/latest | jq -r .tag_name) && \
-        if [ -z "$LATEST_VERSION" ]; then \
-            echo "Failed to fetch the latest FrankenPHP version"; \
-            exit 1; \
-        fi && \
-        if [ "${TARGETARCH}" = "arm64" ]; then \
-            FRANKENPHP_ARCH="aarch64"; \
-        else \
-            FRANKENPHP_ARCH="${TARGETARCH}"; \
-        fi && \
-        curl -LO https://github.com/dunglas/frankenphp/releases/download/${LATEST_VERSION}/frankenphp-linux-${FRANKENPHP_ARCH} && \
-        chmod +x frankenphp-linux-${FRANKENPHP_ARCH} && \
-        mv frankenphp-linux-${FRANKENPHP_ARCH} /usr/local/bin/frankenphp; \
-    fi
-
     ###########################################################################
     # Human Language and Character Encoding Support
     ###########################################################################
@@ -289,6 +242,65 @@ RUN if [ ${INSTALL_PG_CLIENT} = true ]; then \
           fi && \
           apt-get purge -yqq gnupg; \
     fi
+
+    ###########################################
+    # Excimer
+    ###########################################
+RUN if [ ${INSTALL_EXCIMER} = true ]; then \
+        pecl -q install -o -f excimer && \
+        docker-php-ext-enable excimer; \
+    fi
+
+    ###########################################
+    # OpenSwoole/Swoole extension
+    ###########################################
+RUN if [ ${INSTALL_SWOOLE} = true ]; then \
+        apt-get install -yqq --no-install-recommends --show-progress libc-ares-dev && \
+        pecl -q install -o -f -D 'enable-openssl="yes" enable-http2="yes" enable-swoole-curl="yes" enable-mysqlnd="yes" enable-cares="yes"' ${SWOOLE_SERVER} && \
+        docker-php-ext-enable ${SWOOLE_SERVER}; \
+    fi
+
+    ###########################################
+    # Install RoadRunner Binary
+    ###########################################
+RUN if [ "${INSTALL_ROADRUNNER}" = "true" ]; then \
+        LATEST_VERSION=$(curl -s https://api.github.com/repos/roadrunner-server/roadrunner/releases/latest | jq -r .tag_name) && \
+        if [ -z "$LATEST_VERSION" ]; then \
+            echo "Failed to fetch the latest RoadRunner version"; \
+            exit 1; \
+        fi && \
+        CLEAN_VERSION=${LATEST_VERSION#v} && \
+        if [ "${TARGETARCH}" = "x86_64" ]; then \
+            ROADRUNNER_ARCH="amd64"; \
+        else \
+            ROADRUNNER_ARCH="${TARGETARCH}"; \
+        fi && \
+        curl -LO https://github.com/roadrunner-server/roadrunner/releases/download/${LATEST_VERSION}/roadrunner-${CLEAN_VERSION}-linux-${ROADRUNNER_ARCH}.deb && \
+        dpkg -i roadrunner-${CLEAN_VERSION}-linux-${ROADRUNNER_ARCH}.deb && \
+        rm roadrunner-${CLEAN_VERSION}-linux-${ROADRUNNER_ARCH}.deb; \
+    fi
+
+    ###########################################
+    # Install FrankenPHP
+    ###########################################
+RUN if [ "${INSTALL_FRANKENPHP}" = "true" ]; then \
+        LATEST_VERSION=$(curl -s https://api.github.com/repos/dunglas/frankenphp/releases/latest | jq -r .tag_name) && \
+        if [ -z "$LATEST_VERSION" ]; then \
+            echo "Failed to fetch the latest FrankenPHP version"; \
+            exit 1; \
+        fi && \
+        if [ "${TARGETARCH}" = "arm64" ]; then \
+            FRANKENPHP_ARCH="aarch64"; \
+        else \
+            FRANKENPHP_ARCH="${TARGETARCH}"; \
+        fi && \
+        curl -LO https://github.com/dunglas/frankenphp/releases/download/${LATEST_VERSION}/frankenphp-linux-${FRANKENPHP_ARCH} && \
+        chmod +x frankenphp-linux-${FRANKENPHP_ARCH} && \
+        mv frankenphp-linux-${FRANKENPHP_ARCH} /usr/local/bin/frankenphp; \
+    fi
+
+RUN mkdir -p /root/.config/caddy /root/.local && \
+    chmod 777 /root/.config/caddy /root/.local
 
 ###########################################
 # Include composer
