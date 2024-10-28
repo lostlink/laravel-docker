@@ -95,17 +95,17 @@ while(<>)
         }
 	}
 
-	if(($qtype eq "AAAA" || $qtype eq "ANY")) {
-        print STDERR "$$ Sent AAAA records\n";
-        if (exists $ENV{"PIPE_DEFAULT_IPV6"}) {
-            my @ipv6_addresses = split(',', $ENV{"PIPE_DEFAULT_IPV6"});
-            foreach my $ipv6 (@ipv6_addresses) {
-                print "DATA\t$bits\t$auth\t$qname\t$qclass\tAAAA\t3600\t-1\t$ipv6\n";
-            }
-        } else {
-			print "DATA\t$bits\t$auth\t$qname\t$qclass\tAAAA\t3600\t-1\t::1\n";
-		}
-	}
+#	if(($qtype eq "AAAA" || $qtype eq "ANY")) {
+#        print STDERR "$$ Sent AAAA records\n";
+#        if (exists $ENV{"PIPE_DEFAULT_IPV6"}) {
+#            my @ipv6_addresses = split(',', $ENV{"PIPE_DEFAULT_IPV6"});
+#            foreach my $ipv6 (@ipv6_addresses) {
+#                print "DATA\t$bits\t$auth\t$qname\t$qclass\tAAAA\t3600\t-1\t$ipv6\n";
+#            }
+#        } else {
+#			print "DATA\t$bits\t$auth\t$qname\t$qclass\tAAAA\t3600\t-1\t::1\n";
+#		}
+#	}
 
 	if(($qtype eq "MX" || $qtype eq "ANY")) {
         print STDERR "$$ Sent MX records\n";
