@@ -10,7 +10,8 @@ RUN xcaddy build \
     --with github.com/caddy-dns/powerdns \
     --with github.com/caddy-dns/cloudflare \
     --with github.com/mholt/caddy-l4 \
-    --with github.com/hslatman/caddy-crowdsec-bouncer
+    --with github.com/hslatman/caddy-crowdsec-bouncer/http \
+    --with github.com/darkweak/souin/plugins/caddy
 
 # TODO: Build the octane image locally and use it here, instead of pulling from dockerhub
 #  This should work on GithubAction and locally using the docker buildx build command
